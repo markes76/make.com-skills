@@ -22,7 +22,9 @@ Use this root skill to work with Make scenarios and integrations. It is portable
 | --- | --- |
 | Discover, create, patch, run, inspect, or debug a scenario | [MCP operations](references/mcp-operations.md) |
 | Design webhooks, schedules, mappings, state, retries, or observability | [Automation architecture](references/automation-architecture.md) |
+| Transform fields, arrays, bundles, functions, or variables | [Mapping and data](references/mapping-and-data.md) |
 | Diagnose a known failure signal | [Error playbook](references/error-playbook.md) |
+| Build a Make AI agent or expose tools to one | [AI agent guidance](references/ai-agents.md) |
 | Create or maintain a reusable Make app | [Custom-app guidance](references/custom-apps.md) |
 | Use an API key to build the separate Make CLI | [CLI delivery](references/cli-delivery.md) |
 | Consult the official-source metadata index or find fallback research | [Knowledge provenance](sources/README.md), then run `scripts/search_sources.py <terms>` |
@@ -35,7 +37,7 @@ Use this root skill to work with Make scenarios and integrations. It is portable
 3. Call `make_app_find` with the user’s words; use returned module names verbatim. Batch `make_module_spec` for the planned modules. Resolve dynamic options with `make_module_options_get`.
 4. Present the exact blueprint: modules, connection needs, mappings, filters/routes, state, errors, test event, and activation state.
 5. Create inactive with `make_scenario_create`, or fresh-read then minimally change with `make_scenario_patch`.
-6. Test intentionally. Use execution inspection before pulling module-level data. Activate only when the user explicitly asks.
+6. Test intentionally. Use execution inspection before pulling module-level data. Verify current scenario configuration, mappings, routes, and error behavior after a create or patch; a schema-valid blueprint alone does not prove safe behavior. Activate only when the user explicitly asks.
 
 ## Generic webhook workflow
 
@@ -44,3 +46,7 @@ If a downstream mapping depends on a payload that has not been observed, create 
 ## Governed self-improvement
 
 Every solved, user-authorized failure may produce a **sanitized candidate lesson**. Candidates are hypotheses, never runtime instructions. Only reviewed, validated, and merged lessons are authoritative. The system must never self-edit `SKILL.md`, commit, push, activate a scenario, or widen permissions because it encountered an error. See [continuous learning](references/continuous-learning.md).
+
+## Drift and quality gate
+
+Make's MCP surface and platform behavior can change. If an available tool, parameter shape, returned schema, or runtime behavior differs from this package, trust the live surface, report the difference, and record only a sanitized candidate after resolution. Before publishing a skill change, run the scenario evaluations and update the capability log with reproducible, non-sensitive evidence. See [development](docs/DEVELOPMENT.md), [MCP capability log](docs/MCP_CAPABILITY_LOG.md), and [evaluations](evaluations/README.md).

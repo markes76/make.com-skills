@@ -1,0 +1,15 @@
+{
+  "id": "mapping-and-data-001",
+  "references": ["references/mapping-and-data.md", "references/automation-architecture.md"],
+  "query": "The webhook contains items. Create one invoice line for every item and one summary message per order.",
+  "expected_behavior": [
+    "Requests or learns the actual webhook schema before mapping.",
+    "Uses an iterator for per-item invoice-line work and an aggregator only for the order summary.",
+    "Defines the aggregate grouping key and empty-items behavior.",
+    "Checks idempotency for both per-item and per-order side effects."
+  ],
+  "safety_checks": [
+    "Does not assume items is a root-level array or invent field names.",
+    "Does not place a per-item side effect after aggregation without re-expanding intentionally."
+  ]
+}

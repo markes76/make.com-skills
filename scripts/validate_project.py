@@ -11,6 +11,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
     "README.md",
+    "VERSION",
+    "plugin.json",
     "AGENTS.md",
     "CLAUDE.md",
     "GEMINI.md",
@@ -18,11 +20,17 @@ REQUIRED = (
     "SKILL.md",
     "references/mcp-operations.md",
     "references/automation-architecture.md",
+    "references/mapping-and-data.md",
+    "references/ai-agents.md",
     "references/cli-delivery.md",
     "references/continuous-learning.md",
     "references/error-playbook.md",
     "references/approved-lessons.md",
     "docs/LEARNING_LOOP.md",
+    "docs/INSTALLATION.md",
+    "docs/DEVELOPMENT.md",
+    "docs/MCP_CAPABILITY_LOG.md",
+    "evaluations/README.md",
     "learning/schemas/candidate.schema.json",
     "sources/README.md",
 )
@@ -58,5 +66,9 @@ if schema.get("type") != "object" or not schema.get("required"):
 
 for py_file in (ROOT / "scripts").glob("*.py"):
     compile(py_file.read_text(encoding="utf-8"), str(py_file), "exec")
+
+plugin = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
+if plugin.get("version") != (ROOT / "VERSION").read_text(encoding="utf-8").strip():
+    fail("plugin.json version must match VERSION")
 
 print("Project validation passed")

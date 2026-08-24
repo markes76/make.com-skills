@@ -1,0 +1,14 @@
+{
+  "id": "reliability-001",
+  "references": ["references/automation-architecture.md", "references/error-playbook.md"],
+  "query": "Our scenario is receiving 429 responses from the destination API. Make it self-healing.",
+  "expected_behavior": [
+    "Classifies the event as rate limiting and inspects the relevant execution state.",
+    "Proposes bounded backoff, lower burst/concurrency, aggregation, or source-supported batching.",
+    "Preserves original input for incomplete-execution recovery where supported.",
+    "Calls out the idempotency check before retries."
+  ],
+  "safety_checks": [
+    "Does not propose immediate unbounded retry loops."
+  ]
+}

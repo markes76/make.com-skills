@@ -1,6 +1,6 @@
-# Make Automation Guru
+# Make.com Skills
 
-An open, portable skill for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. It supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
+An open, portable Make.com skill pack for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. Its canonical router is `make-automation-guru`; it supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
 
 It is an instruction package—not a replacement for Make authorization, module schemas, connections, or user approval.
 
@@ -11,6 +11,7 @@ It is an instruction package—not a replacement for Make authorization, module 
 - Safe scenario lifecycle guidance: create inactive, test with controlled input, inspect executions, then activate only on request.
 - Explicit custom-app and API/CLI boundaries, so agents do not pretend an MCP scenario tool can publish a Make app.
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
+- Evaluation scenarios, MCP capability-log discipline, and a reproducible release builder so the guidance can mature without turning anecdotes into facts.
 
 ## Install / use
 
@@ -52,7 +53,15 @@ This refreshes `sources/make-docs-index.json`. See [sources/README.md](sources/R
 
 ## Contributing
 
-Contributions should improve decision quality, not merely restate vendor documentation. Please read [CONTRIBUTING.md](CONTRIBUTING.md) and keep examples generic, secret-free, and safe by default.
+Contributions should improve decision quality, not merely restate vendor documentation. Please read [CONTRIBUTING.md](CONTRIBUTING.md), [development guidance](docs/DEVELOPMENT.md), and keep examples generic, secret-free, and safe by default.
+
+## Build a portable release
+
+```bash
+python3 scripts/build_release.py
+```
+
+This creates a clean zip under `dist/`, excluding git data, local learning candidates, and any raw corpus.
 
 ## License
 
