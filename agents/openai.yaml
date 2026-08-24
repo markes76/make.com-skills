@@ -1,0 +1,3 @@
+display_name: Make Automation Guru
+short_description: Design and operate reliable Make automations
+default_prompt: Use $make-automation-guru to design a safe Make scenario and present the blueprint before any external changes.

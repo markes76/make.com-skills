@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Make Automation Guru learning candidate",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "created_at",
+    "status",
+    "title",
+    "kind",
+    "symptom",
+    "root_cause",
+    "resolution",
+    "evidence",
+    "expires_after_days"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^[a-f0-9]{16}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "status": {"const": "candidate"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "kind": {"enum": ["schema", "runtime", "design", "api", "tooling"]},
+    "symptom": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "root_cause": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "resolution": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "evidence": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "expires_after_days": {"enum": [90, 180]}
+  },
+  "additionalProperties": true
+}

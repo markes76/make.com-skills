@@ -1,0 +1,6 @@
+# Local documentation and learning data may contain protected information.
+.learning/
+make_public_docs.jsonl
+*.pyc
+__pycache__/
+.DS_Store
