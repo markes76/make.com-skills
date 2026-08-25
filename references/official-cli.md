@@ -1,6 +1,6 @@
 # Official Make CLI Companion
 
-`make-skills` augments the official Make CLI. It never replaces it.
+`make-skills` augments the official Make CLI. It never replaces it. The AI skill is the guided experience; this terminal companion provides authentication and evidence handoffs.
 
 ## Install and authenticate
 
@@ -11,15 +11,14 @@ Install Make's supported `make-cli` using the official instructions. npm/npx bri
 
 Do not pass an API key with `--api-key` in shell history, commit it, send it to an agent chat, or put it in a scenario field.
 
-## Use the companion
+## Use the companion as an AI fallback
 
 ```bash
 make-skills doctor
-make-skills wizard
 make-skills review <scenario-id> --json
 ```
 
-The wizard checks the official binary, verifies authentication with a read-only user request, selects an organization and team, then offers:
+The legacy terminal wizard checks the official binary, verifies authentication with a read-only user request, selects an organization and team, then offers:
 
 1. List the selected team's scenarios, choose one by displayed number or scenario ID (including an ID not in the current list), retrieve its current detail, classify confirmed versus needs-validation findings, and save a minimized derived review report.
 2. Ask what the user wants to change, adapt, fix, expand, troubleshoot, or document; create a local approval-gated plan that routes to MCP/live-schema work.
@@ -36,7 +35,7 @@ With explicit consent, the wizard can continuously record sanitized generic revi
 
 ## Agent handoff
 
-Claude, ChatGPT, Codex, Cursor, Gemini, and OpenClaw can read the plan file created by the wizard, load `SKILL.md`, then use Make MCP to discover exact modules, connections, options, and live data shapes. If MCP is unavailable, they should identify the required official CLI/API research and return a reviewable design rather than inventing a scenario.
+Claude, ChatGPT, Codex, Cursor, Gemini, and OpenClaw should load `SKILL.md` first, then use Make MCP to discover exact modules, connections, options, and live data shapes. When the user mentions a scenario, the AI handles its due diligence and asks whether to review, fix, expand, troubleshoot, or document it. If MCP is unavailable, it can request a minimized `make-skills review <scenario-id> --json` handoff and identify the required official CLI/API research rather than inventing a scenario.
 
 The terminal companion cannot itself turn a local terminal into an MCP client. It provides a safe handoff; the agent client must discover the MCP surface it actually has before proposing or executing a schema-dependent change. For end-to-end governance, use [enterprise operations](enterprise-operations.md).
 

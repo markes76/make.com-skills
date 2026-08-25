@@ -9,9 +9,14 @@ const {
   installOfficialCli,
   managedCliStatus,
 } = require("./official-cli-installer.cjs");
+const {
+  installSkill,
+  parseSkillArguments,
+  skillStatus,
+} = require("./skill-installer.cjs");
 
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
-const SUPPORTED_COMMANDS = new Set(["doctor", "wizard", "review", "update", "notifications"]);
+const SUPPORTED_COMMANDS = new Set(["doctor", "wizard", "review", "learn", "update", "notifications"]);
 const NOTIFICATION_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const NOTIFICATION_LOCK_STALE_MS = 5 * 60 * 1000;
 
@@ -345,7 +350,8 @@ function extractMakeCliArguments(forwardedArgs) {
 function commandFromArguments(argv) {
   const { globalArgs, remainingArgs: args } = extractMakeCliArguments(argv);
   if (!args.length) {
-    return { type: "python", forwardedArgs: [...globalArgs, "wizard"] };
+    if (globalArgs.length) throw new Error("--make-cli requires a companion command.");
+    return { type: "onboarding" };
   }
   if (args[0] === "--version" || args[0] === "version") {
     if (args.length !== 1 || globalArgs.length) {
@@ -371,6 +377,10 @@ function commandFromArguments(argv) {
     }
     throw new Error("Usage: make-com-skills make-cli <status|install> [--yes]");
   }
+  if (args[0] === "skill") {
+    if (globalArgs.length) throw new Error("skill does not accept --make-cli.");
+    return parseSkillArguments(args);
+  }
   if (!SUPPORTED_COMMANDS.has(args[0])) {
     throw new Error(`Unsupported command: ${args[0]}`);
   }
@@ -391,18 +401,21 @@ function commandFromArguments(argv) {
 
 function usage() {
   return [
-    "Usage: make-com-skills [--version|doctor|wizard|review|make-cli|update] [command options]",
+    "Usage: make-com-skills [--version|skill|doctor|wizard|review|learn|make-cli|update] [command options]",
     "",
     "Commands:",
     "  doctor   Verify a bundled Python 3 companion and the official Make CLI (read-only).",
-    "  wizard   Start the read-first Make Skills wizard (default).",
+    "  skill    Install the AI-first Make Automation Guru skill for Codex, Claude, Cursor, Gemini, or OpenClaw.",
+    "  wizard   Legacy read-first terminal handoff; use the installed AI skill for the guided engagement.",
     "  review <scenario-id>  Create a read-only derived review (supports --json).",
+    "  learn    Record an explicitly consented, generic private lesson for the AI skill.",
     "  make-cli <status|install>  Inspect or explicitly install a checksum-verified official Make CLI.",
     "  update   Check the npm registry and print an opt-in update command; never installs anything.",
     "  notifications <enable|disable|status>  Manage opt-in 24-hour update notices for doctor/wizard.",
     "",
     "Python discovery: MAKE_SKILLS_PYTHON, then platform Python 3 candidates.",
     "Official Make CLI selection: pass --make-cli PATH or set MAKE_SKILLS_MAKE_CLI.",
+    "Default behavior prints AI-first setup; the terminal companion never replaces an AI agent.",
     "Unofficial community companion: review every command before approving any third-party effect.",
   ].join("\n");
 }
@@ -526,7 +539,7 @@ function updateMessage(packageName, currentVersion, latestVersion, statusCode = 
     `Update available: ${currentVersion} -> ${latestVersion}.`,
     "Review the release notes, then opt in with one of these commands:",
     `  npm install --global ${packageName}@${latestVersion}`,
-    `  npx --yes ${packageName}@${latestVersion} wizard`,
+    `  npx --yes ${packageName}@${latestVersion} skill install --target codex`,
     "No installation was performed.",
   ].join("\n");
 }
@@ -638,6 +651,14 @@ async function main(argv = process.argv.slice(2), options = {}) {
     write(`make-com-skills npm wrapper ${manifest.version}`);
     return 0;
   }
+  if (command.type === "onboarding") {
+    write("Make.com Skills is AI-first: install the skill into your AI client, then let the AI guide review, troubleshooting, build, and learning.");
+    write("For Codex: make-com-skills skill install --target codex");
+    write("For Claude: make-com-skills skill install --target claude");
+    write("For Cursor/Gemini project skills: make-com-skills skill install --target cursor|gemini --project <project-path>");
+    write("The terminal companion is only for the official CLI, read-only reports, and explicit private-learning storage.");
+    return 0;
+  }
   if (command.type === "update") {
     write(`Checking the npm registry for ${manifest.name} (read-only)...`);
     try {
@@ -655,6 +676,14 @@ async function main(argv = process.argv.slice(2), options = {}) {
   }
   if (command.type === "make-cli") {
     return manageOfficialCli(command, options);
+  }
+  if (command.type === "skill") {
+    try {
+      return command.action === "status" ? skillStatus(command, { ...options, packageRoot }) : installSkill(command, { ...options, packageRoot });
+    } catch (error) {
+      console.error(`Could not manage the AI skill: ${error.message}`);
+      return 2;
+    }
   }
   if (!hasBundledPython(packageRoot)) {
     console.error("The bundled Python companion is missing. Install a released package, or run `npm run bundle-python` from a repository checkout before using this development wrapper.");
@@ -696,6 +725,9 @@ module.exports = {
   main,
   manageOfficialCli,
   manageNotifications,
+  installSkill,
+  parseSkillArguments,
+  skillStatus,
   markNotificationChecked,
   maybeShowUpdateNotification,
   notificationConfigDirectory,

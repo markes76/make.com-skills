@@ -5,10 +5,10 @@ import json
 import os
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
-from make_skills.cli import doctor, review
+from make_skills.cli import doctor, learn, review
 from make_skills.official_cli import run_json
 from make_skills.personal_learning import PersonalLearningStore
 from make_skills.wizard import build_scenario_review, choose, review_scenarios, run_wizard, write_design_handoff, write_scenario_review
@@ -198,6 +198,34 @@ class OfficialCliBridgeTests(unittest.TestCase):
         if os.name != "nt":
             self.assertEqual(store.directory.stat().st_mode & 0o777, 0o700)
             self.assertEqual(store.skill_path.stat().st_mode & 0o777, 0o600)
+
+    def test_ai_can_record_only_explicit_generic_private_lessons(self) -> None:
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(
+                learn(
+                    self.root / "private-ai",
+                    "verified",
+                    "ERROR_HANDLING_REQUIRES_LIVE_CHECK",
+                    "Error handling needed a current execution review.",
+                    "Inspect the relevant execution before changing retry behavior.",
+                    consent=True,
+                ),
+                0,
+            )
+        personal_skill = (self.root / "private-ai" / "PERSONAL_SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("ERROR_HANDLING_REQUIRES_LIVE_CHECK", personal_skill)
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            self.assertEqual(
+                learn(self.root / "unsafe", "candidate", "SCENARIO_ID", "Scenario id: 1905530 failed.", "Retry it.", consent=True),
+                2,
+            )
+            self.assertEqual(
+                learn(self.root / "no-consent", "candidate", "GENERIC_CHECK", "Use a live check.", "Revalidate first.", consent=False),
+                2,
+            )
+        self.assertFalse((self.root / "unsafe").exists())
+        self.assertFalse((self.root / "no-consent").exists())
 
 
 if __name__ == "__main__":

@@ -31,6 +31,7 @@
     "bin",
     "lib",
     "python",
+    "skill",
     "scripts",
     "README.md",
     "LICENSE",
@@ -38,8 +39,9 @@
   ],
   "scripts": {
     "bundle-python": "node scripts/bundle-python.cjs",
-    "prepare": "node scripts/bundle-python.cjs",
-    "prepack": "node scripts/bundle-python.cjs",
+    "bundle-skill": "node scripts/bundle-skill.cjs",
+    "prepare": "node scripts/bundle-python.cjs && node scripts/bundle-skill.cjs",
+    "prepack": "node scripts/bundle-python.cjs && node scripts/bundle-skill.cjs",
     "test": "node --test"
   },
   "engines": {

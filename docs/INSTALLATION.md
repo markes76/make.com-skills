@@ -13,26 +13,41 @@ python3 scripts/install.py --target cursor --scope project --project /path/to/pr
 
 Add `--apply` only after confirming the printed destination. The installer copies files (never symlinks) and refuses replacement unless `--force` is explicit.
 
-## Terminal wizard
+## AI-first installation
+
+Install the skill into the AI client that will reason about your Make work. The AI carries the conversation, scenario due diligence, review, design, troubleshooting, and explicitly consented personal learning; the terminal does not replace it with a numbered menu.
+
+From the public npm package:
+
+```bash
+npm install --global @markesai/make-com-skills
+make-com-skills skill install --target codex
+```
+
+Replace `codex` with `claude`, `cursor`, `gemini`, `openclaw`, or `agents`. Cursor, Gemini, and generic agents use project scope; pass `--project /path/to/project` when needed. The command refuses to overwrite an existing skill or adapter unless `--force` is explicit.
+
+Restart/open the AI client and ask it to review a named scenario, troubleshoot an error, build a new flow, or document an automation. It should load `SKILL.md` and lead the work in conversation.
+
+## Terminal companion (not the AI wizard)
 
 `make-skills` is a Python companion package, while `make-cli` is Make's official API CLI. Install the official CLI first using its official release/install guidance, then install this package from GitHub:
 
 ```bash
 python3 -m pip install --user "git+https://github.com/markes76/make.com-skills.git"
 make-skills doctor
-make-skills wizard
+make-skills doctor
 ```
 
-The wizard uses `make-cli login` when authentication is missing. It never receives a token as a command argument and it does not persist a token itself. If `make-cli` is installed outside `PATH`, pass its executable with `make-skills --make-cli /path/to/make-cli wizard` or set `MAKE_SKILLS_MAKE_CLI`.
+The terminal companion uses `make-cli login` when authentication is missing. It never receives a token as a command argument and it does not persist a token itself. If `make-cli` is installed outside `PATH`, pass its executable with `make-skills --make-cli /path/to/make-cli doctor` or set `MAKE_SKILLS_MAKE_CLI`.
 
 For a downloaded GitHub clone/release zip, no package install is required before first use:
 
 ```bash
 python3 scripts/start_wizard.py doctor
-python3 scripts/start_wizard.py wizard
+python3 scripts/install.py --target codex --scope user --apply
 ```
 
-`doctor` is read-only and checks the official CLI version plus authenticated-user access. The wizard guides the user through login, organization/team selection, scenario review, enhancement prompts, and local design handoff creation.
+`doctor` is read-only and checks the official CLI version plus authenticated-user access. `wizard` remains a legacy terminal handoff for environments without an AI client; the installed AI skill is the preferred guided interface.
 
 For a single exact scenario ID without the interactive menu, use:
 
@@ -47,7 +62,7 @@ It reads only the selected scenario and emits a minimized report. Add `--save` t
 After the maintainer completes the one-time public npm publish, users can invoke the packaged bridge with:
 
 ```bash
-npx --yes @markesai/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest skill install --target codex
 ```
 
 or install it globally:
@@ -56,11 +71,11 @@ or install it globally:
 npm install --global @markesai/make-com-skills
 make-com-skills make-cli install
 make-com-skills doctor
+make-com-skills skill install --target codex
 make-com-skills notifications enable
-make-com-skills wizard
 ```
 
-The bridge needs Node 18+ and Python 3, bundles this companion, and delegates Make API work to the official `make-cli`. `make-cli install` is an explicit, confirmation-gated download from Make's official GitHub release and verifies a pinned SHA-256 before writing only to the user-local tools directory. npm installation itself never downloads the official CLI, changes `PATH`, or saves credentials. Update checking is opt-in and notification-only; it never installs a package without an explicit user command. The exact publication and security setup is documented in [NPM release](NPM_RELEASE.md).
+The bridge needs Node 18+ and bundles the AI skill plus its Python companion. The terminal companion delegates Make API reads to the official `make-cli`; the AI client performs the guided reasoning and uses Make MCP first where available. `make-cli install` is an explicit, confirmation-gated download from Make's official GitHub release and verifies a pinned SHA-256 before writing only to the user-local tools directory. npm installation itself never downloads the official CLI, changes `PATH`, or saves credentials. Update checking is opt-in and notification-only; it never installs a package without an explicit user command. The exact publication and security setup is documented in [NPM release](NPM_RELEASE.md).
 
 | Target | User scope | Project scope |
 | --- | --- | --- |
@@ -80,4 +95,4 @@ Copy the whole repository to the target tool's skill directory. For an agent tha
 
 Ask the agent to read `SKILL.md`, then request a **design-only** Make scenario. A correct response declares capabilities, asks for or discovers live schema, shows an inactive blueprint, and does not invent modules or credentials.
 
-For terminal use, `make-skills doctor` should report an official CLI version and verified authentication. `make-skills wizard` should offer reads and local plan creation only; it must not make a Make write during onboarding.
+For terminal use, `make-skills doctor` should report an official CLI version and verified authentication. `make-skills wizard`, if used in a non-AI environment, offers reads and local plan creation only; it must not make a Make write during onboarding.

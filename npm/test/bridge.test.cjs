@@ -27,6 +27,10 @@ const {
   withManagedMakeCli,
 } = require("../lib/bridge.cjs");
 const {
+  installSkill,
+  parseSkillArguments,
+} = require("../lib/skill-installer.cjs");
+const {
   extractVerifiedBinary,
   installOfficialCli,
   managedCliPath,
@@ -109,7 +113,7 @@ test("only doctor and wizard are eligible for opt-in update notices", () => {
 });
 
 test("command routing supports only safe bridge actions", () => {
-  assert.deepEqual(commandFromArguments([]), { type: "python", forwardedArgs: ["wizard"] });
+  assert.deepEqual(commandFromArguments([]), { type: "onboarding" });
   assert.deepEqual(commandFromArguments(["--make-cli", "/safe/path/make-cli", "doctor"]), {
     type: "python",
     forwardedArgs: ["--make-cli", "/safe/path/make-cli", "doctor"],
@@ -123,6 +127,10 @@ test("command routing supports only safe bridge actions", () => {
     type: "python",
     forwardedArgs: ["review", "1905530", "--json"],
   });
+  assert.deepEqual(commandFromArguments(["learn", "--consent", "--code", "GENERIC_CHECK", "--summary", "Use a live check.", "--recommendation", "Revalidate first."]), {
+    type: "python",
+    forwardedArgs: ["learn", "--consent", "--code", "GENERIC_CHECK", "--summary", "Use a live check.", "--recommendation", "Revalidate first."],
+  });
   assert.deepEqual(commandFromArguments(["notifications", "enable"]), { type: "notifications", action: "enable" });
   assert.deepEqual(commandFromArguments(["make-cli", "status"]), { type: "make-cli", action: "status", assumeYes: false });
   assert.deepEqual(commandFromArguments(["make-cli", "install", "--yes"]), { type: "make-cli", action: "install", assumeYes: true });
@@ -130,6 +138,24 @@ test("command routing supports only safe bridge actions", () => {
   assert.throws(() => commandFromArguments(["notifications", "maybe"]), /notifications/);
   assert.throws(() => commandFromArguments(["make-cli", "install", "--force"]), /make-cli/);
   assert.throws(() => commandFromArguments(["publish"]), /Unsupported command/);
+});
+
+test("AI skill installer copies only the packaged public skill after an explicit command", (t) => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "make-com-skills-ai-skill-"));
+  t.after(() => fs.rmSync(temporary, { recursive: true, force: true }));
+  const packageRoot = path.join(temporary, "package");
+  const template = path.join(packageRoot, "skill");
+  fs.mkdirSync(path.join(template, "references"), { recursive: true });
+  fs.writeFileSync(path.join(template, "SKILL.md"), "---\nname: make-automation-guru\ndescription: Test skill\n---\n");
+  fs.writeFileSync(path.join(template, "references", "ai-engagement.md"), "test\n");
+  const command = parseSkillArguments(["skill", "install", "--target", "codex"]);
+  const messages = [];
+  assert.equal(installSkill(command, { packageRoot, homeDirectory: path.join(temporary, "home"), write: (message) => messages.push(message) }), 0);
+  const destination = path.join(temporary, "home", ".codex", "skills", "make-automation-guru");
+  assert.equal(fs.existsSync(path.join(destination, "SKILL.md")), true);
+  assert.equal(fs.existsSync(path.join(destination, "references", "ai-engagement.md")), true);
+  assert.match(messages.join("\n"), /AI-first/);
+  assert.throws(() => installSkill(command, { packageRoot, homeDirectory: path.join(temporary, "home") }), /Refusing to overwrite/);
 });
 
 test("the official CLI installer selects only supported verified artifacts", () => {
@@ -192,7 +218,7 @@ test("a verified managed binary is used only when no explicit CLI override exist
 test("update messaging is opt-in and never claims an install occurred", () => {
   const message = updateMessage("make-com-skills", "0.0.0-development", "0.4.0");
   assert.match(message, /npm install --global make-com-skills@0.4.0/);
-  assert.match(message, /npx --yes make-com-skills@0.4.0 wizard/);
+  assert.match(message, /npx --yes make-com-skills@0.4.0 skill install --target codex/);
   assert.match(message, /No installation was performed/);
   assert.equal(isVersionNewer("0.4.0", "0.0.0-development"), true);
   assert.equal(isVersionNewer("0.4.0", "0.4.0"), false);

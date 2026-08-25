@@ -18,6 +18,13 @@ SECRET_PATTERNS = (
 URL_QUERY = re.compile(r"https?://[^\s?]+\?[^\s]+", re.I)
 EMAIL = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
 WEBHOOK_URL = re.compile(r"https?://[^\s]*(?:webhook|hooks)[^\s]*", re.I)
+URL = re.compile(r"https?://", re.I)
+PHONE = re.compile(r"(?<!\w)(?:\+?\d[\d(). -]{6,}\d)(?!\w)")
+UUID = re.compile(r"(?i)\b[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\b")
+RESOURCE_IDENTIFIER = re.compile(
+    r"(?i)\b(?:scenario|team|organization|connection|execution|account|customer|user|contact|record|bundle)[ _-]*(?:id|number)?\s*[:=#]\s*[a-z0-9_-]{3,}\b"
+)
+PERSONAL_LESSON_CODE = re.compile(r"[A-Z][A-Z0-9_]{2,79}")
 
 
 def default_directory() -> Path:
@@ -62,6 +69,27 @@ def sanitize(value: str, limit: int = 1_000) -> str:
     return value.strip()[:limit]
 
 
+def generic_personal_text(field: str, value: str, maximum: int = 500) -> str:
+    """Reject, rather than redact, unsafe text intended for durable local memory."""
+    if not isinstance(value, str):
+        raise ValueError(f"{field} must be text")
+    text = " ".join(value.split())
+    if not text or len(text) > maximum:
+        raise ValueError(f"{field} must be between 1 and {maximum} characters")
+    for pattern, description in (
+        (SECRET_PATTERNS[0], "a token-like value"),
+        (SECRET_PATTERNS[1], "a credential assignment"),
+        (URL, "a URL"),
+        (EMAIL, "an email address"),
+        (PHONE, "a phone number"),
+        (UUID, "a UUID-like identifier"),
+        (RESOURCE_IDENTIFIER, "a resource or customer identifier"),
+    ):
+        if pattern.search(text):
+            raise ValueError(f"{field} contains {description}")
+    return text
+
+
 class PersonalLearningStore:
     """Store only generalized findings and user-verified lessons outside Git."""
 
@@ -87,6 +115,32 @@ class PersonalLearningStore:
         record = self._record("verified", findings, verified=True)
         self._append(self.verified_path, record)
         self._update_memory(findings, verified=True)
+        self._render_personal_skill()
+        return record["id"]
+
+    def record_manual_lesson(self, *, status: str, code: str, summary: str, recommendation: str) -> str:
+        """Record an explicitly consented, generic AI-derived local lesson.
+
+        This accepts no scenario data and deliberately rejects rather than
+        redacts sensitive identifiers, so an agent cannot turn an incident
+        transcript into durable memory by accident.
+        """
+        normalized_code = code.strip().upper()
+        if status not in {"candidate", "verified"}:
+            raise ValueError("status must be candidate or verified")
+        if not PERSONAL_LESSON_CODE.fullmatch(normalized_code):
+            raise ValueError("code must use 3-80 uppercase letters, digits, or underscores")
+        findings = [
+            {
+                "code": normalized_code,
+                "severity": "info",
+                "summary": generic_personal_text("summary", summary),
+                "recommendation": generic_personal_text("recommendation", recommendation),
+            }
+        ]
+        record = self._record(status, findings, verified=status == "verified")
+        self._append(self.verified_path if status == "verified" else self.candidates_path, record)
+        self._update_memory(findings, verified=status == "verified")
         self._render_personal_skill()
         return record["id"]
 

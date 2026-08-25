@@ -29,6 +29,7 @@ REQUIRED = (
     "references/automation-architecture.md",
     "references/mapping-and-data.md",
     "references/ai-agents.md",
+    "references/ai-engagement.md",
     "references/cli-delivery.md",
     "references/official-cli.md",
     "references/enterprise-operations.md",
@@ -61,7 +62,9 @@ REQUIRED = (
     "npm/bin/make-com-skills.js",
     "npm/lib/bridge.cjs",
     "npm/lib/official-cli-installer.cjs",
+    "npm/lib/skill-installer.cjs",
     "npm/scripts/bundle-python.cjs",
+    "npm/scripts/bundle-skill.cjs",
     "npm/test/bridge.test.cjs",
     "npm/NOTICE.md",
     "tests/TEST.md",
@@ -134,7 +137,7 @@ if npm_package.get("publishConfig", {}).get("access") != "public":
     fail("npm package must declare public publish access")
 if set(npm_package.get("bin", {})) != {"make-com-skills", "make-skills-npx"}:
     fail("npm package must expose both documented command aliases")
-if "python" not in npm_package.get("files", []) or "NOTICE.md" not in npm_package.get("files", []):
-    fail("npm package must include the bundled Python companion and community notice")
+if "python" not in npm_package.get("files", []) or "skill" not in npm_package.get("files", []) or "NOTICE.md" not in npm_package.get("files", []):
+    fail("npm package must include the bundled Python companion, AI skill, and community notice")
 
 print("Project validation passed")

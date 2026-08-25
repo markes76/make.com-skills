@@ -4,7 +4,7 @@
 
 <h1 align="center">Make.com Skills</h1>
 
-<p align="center"><strong>Schema-aware automation guidance, an official-CLI companion, and portable skills for modern agent tools.</strong></p>
+<p align="center"><strong>AI-first Make automation guidance, an official-CLI companion, and portable skills for modern agent tools.</strong></p>
 
 <p align="center"><strong>Unofficial community companion · use at your own risk</strong></p>
 
@@ -14,7 +14,7 @@
 
 An open, portable Make.com skill pack for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. Its canonical router is `make-automation-guru`; it supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
 
-It is an instruction package and companion wizard—not a replacement for Make authorization, module schemas, connections, or user approval. The official [`make-cli`](https://github.com/integromat/make-cli) remains the API runtime; this repository adds guidance, review, planning, and governed learning on top.
+It is an AI instruction package with a terminal companion—not a replacement for Make authorization, module schemas, connections, or user approval. The official [`make-cli`](https://github.com/integromat/make-cli) remains the API runtime; this repository adds AI-led guidance, review, planning, and governed learning on top.
 
 > Community notice: this is independent community software, not an official Make.com package or a replacement for the official CLI. Review every plan and command before approving it; no automation outcome is guaranteed. See [COMMUNITY_NOTICE.md](COMMUNITY_NOTICE.md).
 
@@ -22,7 +22,7 @@ It is an instruction package and companion wizard—not a replacement for Make a
 | --- | --- | --- |
 | Live schemas, connections, scenario design, and approved changes | Make MCP in the active agent client | Official CLI capability check + local skill handoff |
 | Authenticated account/scenario reads | Official `make-cli` through `make-skills` | Make's documented editor/API path |
-| Review, troubleshooting, documentation, and enterprise change plans | `make-skills wizard` / `review` + the skill bundle | Read-only report and a human-approved plan |
+| Review, troubleshooting, documentation, and enterprise change plans | AI client with `make-automation-guru` installed | Read-only official-CLI report and a human-approved plan |
 
 ## What it provides
 
@@ -32,49 +32,59 @@ It is an instruction package and companion wizard—not a replacement for Make a
 - Explicit custom-app and API/CLI boundaries, so agents do not pretend an MCP scenario tool can publish a Make app.
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
 - Evaluation scenarios, MCP capability-log discipline, and a reproducible release builder so the guidance can mature without turning anecdotes into facts.
-- `make-skills`, an installable companion that checks the official CLI, guides secure authentication, reviews scenarios, produces conservative enhancement prompts, and creates safe local design handoffs for new scenarios.
-- A versioned npm/npx bridge that bundles the companion, offers opt-in update notification, and is released through protected npm trusted publishing after its one-time publisher setup.
+- An AI-first engagement protocol: when a scenario is mentioned, the agent performs live due diligence, distinguishes evidence from hypotheses, then leads review, fix, build, troubleshooting, or documentation work.
+- `make-skills`, an installable companion for the official CLI: secure authentication, minimized read-only evidence, and explicitly consented private-learning storage.
+- A versioned npm/npx bridge that installs the portable AI skill for Codex, Claude, Cursor, Gemini, or OpenClaw, then offers opt-in update notification and protected trusted publishing.
 
-## Install the companion wizard
+## Install the AI skill
 
-### Prerequisites
+The primary interface is your AI client—not a terminal menu. From a GitHub clone, use the portable installer shown below. From npm, install the bridge and place the AI skill into the client you use:
+
+```bash
+npm install --global @markesai/make-com-skills
+make-com-skills skill install --target codex
+```
+
+Choose `--target claude`, `cursor`, `gemini`, `openclaw`, or `agents` as appropriate. Cursor/Gemini/agents installs are project-scoped, so provide `--project /path/to/project` when you are not already in that project. Restart/open the target AI client and ask it to review, troubleshoot, build, or document a Make automation. It will ask the relevant questions and do the due diligence in the conversation.
+
+### Terminal companion prerequisites
 
 - Python 3.9 or newer.
 - Make's official `make-cli`, authenticated through its own secure `make-cli login` flow or its documented environment variables.
-- A Make API token scoped for the reads you intend to perform. The wizard needs only read scope for onboarding and review.
+- A Make API token scoped for the reads you intend to perform. The AI skill asks the official CLI to authenticate only when the MCP control plane is unavailable or insufficient.
 
 ### Start from a GitHub clone or release zip
 
-After cloning/downloading this repository, run one command:
+After cloning/downloading this repository, install the skill for your AI client:
 
 ```bash
-python3 scripts/start_wizard.py wizard
+python3 scripts/install.py --target codex --scope user --apply
 ```
 
-It performs the prerequisite/connection journey interactively. To check setup without starting the menu:
+Use the terminal companion only to check the official connection or obtain a minimized read-only report:
 
 ```bash
 python3 scripts/start_wizard.py doctor
 ```
 
-### Install as a reusable terminal command
+### Optional terminal companion
 
 Install Make's official `make-cli` first, then install this package from GitHub:
 
 ```bash
 python3 -m pip install --user "git+https://github.com/markes76/make.com-skills.git"
-python3 -m make_skills wizard
+python3 -m make_skills doctor
 ```
 
-If your Python scripts directory is on `PATH`, the equivalent short command is `make-skills wizard`.
+If your Python scripts directory is on `PATH`, the equivalent short command is `make-skills doctor`.
 
 If the official binary is not on `PATH`, provide its location without copying it into this repository:
 
 ```bash
-make-skills --make-cli /path/to/make-cli wizard
+make-skills --make-cli /path/to/make-cli doctor
 ```
 
-The wizard invokes the official CLI's own login flow when needed, then starts read-only. Scenario review asks for the displayed number or exact scenario ID, retrieves that one scenario, classifies its findings, asks what the user wants to change/adapt/fix/build/document, and saves a derived report plus a reviewable local plan under `~/.make-com-skills/` by default. It can also maintain an explicitly consented, private personal skill there; none of those artifacts are committed or pushed. It never creates or activates a Make scenario from a vague request.
+The legacy terminal `wizard` remains available for non-AI environments, but it is not the primary experience. In an AI client, `SKILL.md` directs the agent to ask the questions, retrieve live evidence, classify findings, and collaborate on the next step. The terminal companion never creates or activates a Make scenario from a vague request.
 
 For an exact, non-interactive read-only review:
 
@@ -89,7 +99,7 @@ Add `--save` only if the minimized local report should be written to the private
 The public npm package is configured as `@markesai/make-com-skills`. Once the maintainer has completed the initial npm trusted-publisher setup, users can run:
 
 ```bash
-npx --yes @markesai/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest skill install --target codex
 ```
 
 or install it globally and opt into update notices:
@@ -97,11 +107,11 @@ or install it globally and opt into update notices:
 ```bash
 npm install --global @markesai/make-com-skills
 make-com-skills make-cli install
+make-com-skills skill install --target codex
 make-com-skills notifications enable
-make-com-skills wizard
 ```
 
-The bridge detects Python 3 and launches the bundled companion. `make-cli install` is a separate, confirmed action that downloads a pinned Make release from Make's official GitHub source, verifies its SHA-256, and installs it only in the user's local tools directory; npm installation itself never downloads the official CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing; until the initial publish completes, use the GitHub clone/Python path above.
+The bridge packages the AI skill and only launches the bundled Python companion for `doctor`, read-only `review`, legacy `wizard`, or explicit `learn` storage. `make-cli install` is a separate, confirmed action that downloads a pinned Make release from Make's official GitHub source, verifies its SHA-256, and installs it only in the user's local tools directory; npm installation itself never downloads the official CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing; until the initial publish completes, use the GitHub clone/Python path above.
 
 ## Install / use
 

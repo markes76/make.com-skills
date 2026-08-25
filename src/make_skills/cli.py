@@ -9,7 +9,7 @@ from pathlib import Path
 
 from . import __version__
 from .official_cli import OfficialCliError, locate, run, run_json
-from .personal_learning import default_artifact_directory
+from .personal_learning import PersonalLearningStore, default_artifact_directory
 from .wizard import COMMUNITY_NOTICE, build_scenario_review, run_wizard, write_scenario_review
 
 
@@ -45,6 +45,21 @@ def review(executable: str | None, scenario_id: str, reviews_directory: Path, as
     return 0
 
 
+def learn(personal_directory: Path | None, status: str, code: str, summary: str, recommendation: str, consent: bool) -> int:
+    """Persist only a consented, generic personal lesson outside the repository."""
+    if not consent:
+        print("Refusing to retain a personal lesson without --consent", file=sys.stderr)
+        return 2
+    try:
+        store = PersonalLearningStore(personal_directory)
+        lesson_id = store.record_manual_lesson(status=status, code=code, summary=summary, recommendation=recommendation)
+    except ValueError as exc:
+        print(f"Refusing unsafe personal lesson: {exc}", file=sys.stderr)
+        return 2
+    print(f"Recorded {status} private lesson {lesson_id} in {store.skill_path}; nothing was sent to GitHub.")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="make-skills", description="Independent community companion for the official Make CLI; plans and reports are not Make authorization.")
     parser.add_argument("--version", action="version", version=__version__)
@@ -63,6 +78,13 @@ def main(argv: list[str] | None = None) -> None:
     review_parser.add_argument("--reviews-dir", type=Path, default=default_artifact_directory("reviews"), help="Private local review directory")
     review_parser.add_argument("--save", action="store_true", help="Save the derived report locally (never to Make or GitHub)")
     review_parser.add_argument("--json", action="store_true", help="Emit the derived report as JSON")
+    learn_parser = commands.add_parser("learn", help="Record an explicitly consented generic private lesson for the AI skill")
+    learn_parser.add_argument("--consent", action="store_true", help="Required permission to retain a private generic lesson")
+    learn_parser.add_argument("--status", choices=("candidate", "verified"), default="candidate", help="Only verified lessons are advisory guidance")
+    learn_parser.add_argument("--code", required=True, help="Generic uppercase lesson code; never a scenario or resource identifier")
+    learn_parser.add_argument("--summary", required=True, help="Generic lesson summary without data, URLs, or identifiers")
+    learn_parser.add_argument("--recommendation", required=True, help="Generic preferred check without data, URLs, or identifiers")
+    learn_parser.add_argument("--personal-dir", type=Path, help="Private personal-learning location (defaults to ~/.make-com-skills)")
     args = parser.parse_args(argv)
     try:
         if args.command == "doctor":
@@ -78,6 +100,8 @@ def main(argv: list[str] | None = None) -> None:
             )
         if args.command == "review":
             raise SystemExit(review(args.make_cli, args.scenario_id, args.reviews_dir, args.json, args.save))
+        if args.command == "learn":
+            raise SystemExit(learn(args.personal_dir, args.status, args.code, args.summary, args.recommendation, args.consent))
     except OfficialCliError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

@@ -1,10 +1,10 @@
 # Make.com Skills npm bridge
 
-This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills Python companion. Its intended public package name is `@markesai/make-com-skills`. A package configuration in Git is not itself a publication: check the npm registry before telling users that a release exists.
+This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills AI skill and Python companion. Its intended public package name is `@markesai/make-com-skills`. A package configuration in Git is not itself a publication: check the npm registry before telling users that a release exists.
 
 > **Unofficial community companion · use at your own risk.** This is not an official Make.com package or the official `make-cli`. Review every proposed command and third-party side effect. See [NOTICE.md](NOTICE.md).
 
-The bridge does not implement Make API operations itself. It discovers Python 3, adds the bundled `python/` directory to `PYTHONPATH`, and invokes `python -m make_skills`. The Python companion continues to use the official Make CLI for API access and retains its read-first, approval-gated behavior. On supported desktop platforms, the optional `make-cli install` command can fetch a pinned official Make release only after the user reviews and confirms its source, SHA-256, and local destination.
+The bridge does not implement Make API operations itself. Its primary job is to install the bundled `skill/` into an AI client; the AI skill carries the conversation and uses MCP as the live control plane. It invokes the Python companion only for official-CLI authentication, minimized read-only reports, legacy non-AI handoffs, and explicit private-learning storage. On supported desktop platforms, the optional `make-cli install` command can fetch a pinned official Make release only after the user reviews and confirms its source, SHA-256, and local destination.
 
 ## Local development
 
@@ -14,8 +14,9 @@ From this directory:
 npm run bundle-python
 node bin/make-com-skills.js --version
 node bin/make-com-skills.js doctor --make-cli /absolute/path/to/make-cli
-node bin/make-com-skills.js wizard --make-cli /absolute/path/to/make-cli
+node bin/make-com-skills.js skill install --target codex
 node bin/make-com-skills.js review 1905530 --json --make-cli /absolute/path/to/make-cli
+node bin/make-com-skills.js learn --consent --status verified --code GENERIC_CHECK --summary "Use a live check." --recommendation "Revalidate before changes."
 node bin/make-com-skills.js make-cli status
 node bin/make-com-skills.js make-cli install
 node bin/make-com-skills.js update
@@ -32,7 +33,7 @@ The bridge checks `MAKE_SKILLS_PYTHON` first, then checks `python3`, `python`, a
 Once a public release exists, the intended end-user entry points are:
 
 ```sh
-npx --yes @markesai/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest skill install --target codex
 npx --yes @markesai/make-com-skills@latest doctor
 npx --yes @markesai/make-com-skills@latest review 1905530 --json
 npx --yes @markesai/make-com-skills@latest make-cli install
@@ -41,7 +42,7 @@ npx --yes @markesai/make-com-skills@latest notifications enable
 make-skills-npx wizard
 ```
 
-Running no command starts `wizard`. `update` makes one HTTPS request to the npm registry, displays a version comparison and prints optional install commands. `make-cli install` is the only command that downloads the official CLI: it displays a pinned version, official GitHub source, SHA-256, and local destination, then requires confirmation (or explicit `--yes` in an already-reviewed non-interactive use). No package postinstall hook downloads Make CLI, changes `PATH`, modifies Make resources, or sends scenario data to npm.
+Running no command prints AI-first setup rather than opening a terminal wizard. `skill install` copies public skill guidance only and refuses to overwrite existing files unless `--force` is explicit. `update` makes one HTTPS request to the npm registry, displays a version comparison and prints optional install commands. `make-cli install` is the only command that downloads the official CLI: it displays a pinned version, official GitHub source, SHA-256, and local destination, then requires confirmation (or explicit `--yes` in an already-reviewed non-interactive use). No package postinstall hook downloads Make CLI, changes `PATH`, modifies Make resources, or sends scenario data to npm.
 
 ### Opt-in update notifications
 
