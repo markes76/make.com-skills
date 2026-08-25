@@ -23,6 +23,7 @@ REQUIRED = (
     "CLAUDE.md",
     "GEMINI.md",
     ".cursor/rules/make-automation-guru.mdc",
+    ".codex/skills/make-com-skills-npm-publish/SKILL.md",
     "SKILL.md",
     "references/mcp-operations.md",
     "references/automation-architecture.md",
@@ -80,6 +81,12 @@ if not skill.startswith("---\nname: make-automation-guru\n"):
     fail("skill frontmatter must identify make-automation-guru")
 if "[TODO:" in skill:
     fail("skill contains an unfinished TODO")
+
+npm_publish_skill = (ROOT / ".codex/skills/make-com-skills-npm-publish/SKILL.md").read_text(encoding="utf-8")
+if not npm_publish_skill.startswith("---\nname: make-com-skills-npm-publish\n"):
+    fail("npm publishing skill frontmatter must identify make-com-skills-npm-publish")
+if "[TODO:" in npm_publish_skill:
+    fail("npm publishing skill contains an unfinished TODO")
 
 readme = (ROOT / "README.md").read_text(encoding="utf-8")
 if "Unofficial community companion" not in readme:

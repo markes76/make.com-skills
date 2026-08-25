@@ -11,6 +11,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 ROOT = Path(__file__).resolve().parents[1]
 EXCLUDED_PARTS = {
     ".git",
+    ".codex",
     ".learning",
     ".tools",
     "dist",

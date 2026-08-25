@@ -28,6 +28,10 @@ Each accepted public knowledge change is reviewed in Git, validated, assigned a 
 
 An update delivers public, version-controlled guidance and code only. It does not include or upload a user’s scenarios, blueprints, plans, private learning overlay, API key, official CLI credentials, or execution data.
 
+## Maintainer release skill
+
+When this repository is opened as the project root in Codex, use the local `$make-com-skills-npm-publish` skill for a routine publication, verification-only workflow run, or release failure triage. It applies only to `@markesai/make-com-skills` in this repository and preserves the protected GitHub Actions/OIDC path. This document remains the portable runbook for maintainers using another tool.
+
 ## One-time maintainer setup
 
 The intended public package is `@markesai/make-com-skills`. Before the first release, the maintainer must confirm that `npm whoami` reports the `markesai` publishing account; a registry `404` only proves that no public package can currently be read, not that the name is reservable.
@@ -49,12 +53,20 @@ The intended public package is `@markesai/make-com-skills`. Before the first rel
 
 Current npm trusted publishing requires a recent npm/Node runtime and GitHub-hosted Actions runner. See [npm’s trusted publishing documentation](https://docs.npmjs.com/trusted-publishers/) for current setup requirements and [npm’s npx documentation](https://docs.npmjs.com/cli/commands/npx/) for invocation behavior.
 
-## Normal release checklist
+## Normal release checklist (after bootstrap)
 
 1. Review public-source watch candidates and merge only evidence-backed guidance changes.
-2. Update `VERSION`, Python package metadata, `plugin.json`, and `npm/package.json` together; run `python3 scripts/sync_npm_version.py --check`.
-3. Run Python validations, unit tests, `npm --prefix npm test`, and `(cd npm && npm pack --dry-run --json)`.
-4. Create Git tag `v<version>` and a GitHub Release. The protected workflow validates that tag/version relationship and asks the configured GitHub environment for approval before publishing.
-5. Publish concise release notes. Existing global users see the next opt-in notification; npx users select the new `latest` version when they invoke it.
+2. Confirm the working tree is clean and that the intended version is not already in the registry. Update `VERSION`, Python package metadata, `plugin.json`, and `npm/package.json` together; use `python3 scripts/sync_npm_version.py --write` only after reviewing the version change, then run `python3 scripts/sync_npm_version.py --check`.
+3. Run `python3 scripts/validate_project.py`, `python3 scripts/validate_evaluations.py`, `PYTHONPATH=src python3 -m unittest discover -s tests -v`, `npm --prefix npm test`, and `(cd npm && npm pack --dry-run --json)`.
+4. Commit and push the validated release commit. Create GitHub Release/tag `v<version>` on that exact commit. The protected workflow validates the tag/version relationship and asks the configured GitHub environment for approval before publishing.
+5. The `npm-publish` environment must keep its reviewer gate and allow a **Tag** deployment rule matching `v*`. A Branch rule with the same pattern does not allow a tag-triggered release. Do not remove protection or enable a bypass to ship a release.
+6. After GitHub Actions succeeds, verify `npm view @markesai/make-com-skills version dist-tags --json` and `npx --yes @markesai/make-com-skills@latest --help`. If metadata is not immediately public, inspect the dist-tags and allow npm's scanning/propagation time before retrying.
+7. Publish concise release notes. Existing global users see the next opt-in notification; npx users select the new `latest` version when they invoke it.
+
+## Recovery and verification-only runs
+
+For a verification-only manual run, dispatch `publish-npm.yml` with `publish` left `false`; its publish job does not run. GitHub still requires the `release_tag` form field, but the workflow ignores it in this mode; supply an existing tag as a clear test label. For an approved recovery publication, dispatch from the exact existing `v<version>` tag with `publish` set to `true` and `release_tag` set to that tag. The workflow verifies that the selected ref, tag, and `VERSION` resolve to the same release commit.
+
+If a publish run fails, inspect the workflow logs and registry state before retrying. Do not run local `npm publish`, add `NPM_TOKEN`, force-update a release tag, or republish a version that might already exist. The normal workflow uses short-lived GitHub OIDC credentials and the `npm-publish` protection gate.
 
 Never mutate an existing npm version. Publish a new version, then move only the `latest` dist-tag through the reviewed release workflow.

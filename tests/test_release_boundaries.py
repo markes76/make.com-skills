@@ -36,6 +36,7 @@ class ReleaseBoundaryTests(unittest.TestCase):
                 names = archive.namelist()
             for forbidden in (
                 "/.tools/",
+                "/.codex/",
                 "/.learning/",
                 "/make-skills-plans/",
                 "/make-skills-reviews/",
@@ -48,11 +49,11 @@ class ReleaseBoundaryTests(unittest.TestCase):
         installer = load_script("make_skills_install", ROOT / "scripts/install.py")
         ignored = installer.IGNORED(
             str(ROOT),
-            ["SKILL.md", "make-skills-reviews", "make-skills-plans", "make-skills-change-plans", ".learning"],
+            ["SKILL.md", "make-skills-reviews", "make-skills-plans", "make-skills-change-plans", ".codex", ".learning"],
         )
         self.assertEqual(
             ignored,
-            {"make-skills-reviews", "make-skills-plans", "make-skills-change-plans", ".learning"},
+            {"make-skills-reviews", "make-skills-plans", "make-skills-change-plans", ".codex", ".learning"},
         )
 
 

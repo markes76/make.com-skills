@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "make-automation-guru"
 IGNORED = shutil.ignore_patterns(
     ".git",
+    ".codex",
     ".learning",
     ".tools",
     "dist",
