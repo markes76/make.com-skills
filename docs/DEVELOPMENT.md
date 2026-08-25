@@ -19,3 +19,5 @@ If live behavior conflicts with the skill, the live surface wins for that run. R
 ## Scope discipline
 
 Keep the router concise and place conditional detail in a focused reference. Do not duplicate large vendor manuals or add a rule because of one anecdote. New scenario examples must name side effects, define an idempotency plan, and remain inactive by default.
+
+The companion package must call the official `make-cli` binary rather than reconstructing Make API requests. Its default actions remain read-only; preserve a clear boundary between a local design handoff and a Make write.

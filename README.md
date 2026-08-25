@@ -2,7 +2,7 @@
 
 An open, portable Make.com skill pack for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. Its canonical router is `make-automation-guru`; it supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
 
-It is an instruction package—not a replacement for Make authorization, module schemas, connections, or user approval.
+It is an instruction package and companion wizard—not a replacement for Make authorization, module schemas, connections, or user approval. The official [`make-cli`](https://github.com/integromat/make-cli) remains the API runtime; this repository adds guidance, review, planning, and governed learning on top.
 
 ## What it provides
 
@@ -12,6 +12,48 @@ It is an instruction package—not a replacement for Make authorization, module 
 - Explicit custom-app and API/CLI boundaries, so agents do not pretend an MCP scenario tool can publish a Make app.
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
 - Evaluation scenarios, MCP capability-log discipline, and a reproducible release builder so the guidance can mature without turning anecdotes into facts.
+- `make-skills`, an installable companion that checks the official CLI, guides secure authentication, reviews scenarios, produces conservative enhancement prompts, and creates safe local design handoffs for new scenarios.
+
+## Install the companion wizard
+
+### Prerequisites
+
+- Python 3.9 or newer.
+- Make's official `make-cli`, authenticated through its own secure `make-cli login` flow or its documented environment variables.
+- A Make API token scoped for the reads you intend to perform. The wizard needs only read scope for onboarding and review.
+
+### Start from a GitHub clone or release zip
+
+After cloning/downloading this repository, run one command:
+
+```bash
+python3 scripts/start_wizard.py wizard
+```
+
+It performs the prerequisite/connection journey interactively. To check setup without starting the menu:
+
+```bash
+python3 scripts/start_wizard.py doctor
+```
+
+### Install as a reusable terminal command
+
+Install Make's official `make-cli` first, then install this package from GitHub:
+
+```bash
+python3 -m pip install --user "git+https://github.com/markes76/make.com-skills.git"
+python3 -m make_skills wizard
+```
+
+If your Python scripts directory is on `PATH`, the equivalent short command is `make-skills wizard`.
+
+If the official binary is not on `PATH`, provide its location without copying it into this repository:
+
+```bash
+make-skills --make-cli /path/to/make-cli wizard
+```
+
+The wizard invokes the official CLI's own login flow when needed, then starts read-only. It can review scenarios and generate a local design handoff, but it never creates or activates a Make scenario from a vague request.
 
 ## Install / use
 
@@ -39,7 +81,7 @@ The skill directs the agent to discover the team, apps, module fields, valid con
 
 Use Make MCP first when it is available: it provides live module specifications, connections, scenario state, creation, patching, execution inspection, and webhook learning.
 
-When MCP cannot support an operation, use the official documentation index to identify the right Make capability. A future API-key-backed CLI belongs in a separate authenticated phase and must not store a token in source, logs, or command history. See [CLI delivery plan](references/cli-delivery.md).
+When MCP cannot support an operation, use the official Make CLI as the authenticated API runtime and use this package as the guardrail layer. See [official CLI companion](references/official-cli.md) and [extension plan](references/cli-delivery.md).
 
 ## Source index
 

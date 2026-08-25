@@ -1,9 +1,9 @@
 {
   "name": "make-com-skills",
-  "version": "0.2.0",
-  "description": "Portable Make.com skills for MCP-first automation design and operations",
+  "version": "0.3.0",
+  "description": "Portable Make.com skills and an official-CLI companion wizard for safe automation design and review",
   "homepage": "https://github.com/markes76/make.com-skills",
   "repository": "https://github.com/markes76/make.com-skills",
   "license": "MIT",
-  "keywords": ["make", "make.com", "automation", "mcp", "agent-skills"]
+  "keywords": ["make", "make.com", "automation", "mcp", "agent-skills", "make-cli"]
 }

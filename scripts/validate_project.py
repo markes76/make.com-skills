@@ -13,6 +13,8 @@ REQUIRED = (
     "README.md",
     "VERSION",
     "plugin.json",
+    "pyproject.toml",
+    "setup.py",
     "AGENTS.md",
     "CLAUDE.md",
     "GEMINI.md",
@@ -23,6 +25,7 @@ REQUIRED = (
     "references/mapping-and-data.md",
     "references/ai-agents.md",
     "references/cli-delivery.md",
+    "references/official-cli.md",
     "references/continuous-learning.md",
     "references/error-playbook.md",
     "references/approved-lessons.md",
@@ -33,6 +36,11 @@ REQUIRED = (
     "evaluations/README.md",
     "learning/schemas/candidate.schema.json",
     "sources/README.md",
+    "src/make_skills/cli.py",
+    "src/make_skills/official_cli.py",
+    "src/make_skills/wizard.py",
+    "scripts/start_wizard.py",
+    "tests/TEST.md",
 )
 
 
@@ -66,9 +74,15 @@ if schema.get("type") != "object" or not schema.get("required"):
 
 for py_file in (ROOT / "scripts").glob("*.py"):
     compile(py_file.read_text(encoding="utf-8"), str(py_file), "exec")
+for py_file in (ROOT / "src").glob("**/*.py"):
+    compile(py_file.read_text(encoding="utf-8"), str(py_file), "exec")
 
 plugin = json.loads((ROOT / "plugin.json").read_text(encoding="utf-8"))
 if plugin.get("version") != (ROOT / "VERSION").read_text(encoding="utf-8").strip():
     fail("plugin.json version must match VERSION")
+
+pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+if 'make-skills = "make_skills.cli:main"' not in pyproject:
+    fail("pyproject.toml must expose make-skills")
 
 print("Project validation passed")

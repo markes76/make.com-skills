@@ -26,7 +26,8 @@ Use this root skill to work with Make scenarios and integrations. It is portable
 | Diagnose a known failure signal | [Error playbook](references/error-playbook.md) |
 | Build a Make AI agent or expose tools to one | [AI agent guidance](references/ai-agents.md) |
 | Create or maintain a reusable Make app | [Custom-app guidance](references/custom-apps.md) |
-| Use an API key to build the separate Make CLI | [CLI delivery](references/cli-delivery.md) |
+| Authenticate, review, or plan work through the official Make CLI | [Official CLI companion](references/official-cli.md), then `make-skills wizard` |
+| Extend the companion package without replacing Make CLI | [CLI delivery](references/cli-delivery.md) |
 | Consult the official-source metadata index or find fallback research | [Knowledge provenance](sources/README.md), then run `scripts/search_sources.py <terms>` |
 | Record a solved failure or propose a skill improvement | [Continuous learning](references/continuous-learning.md) |
 

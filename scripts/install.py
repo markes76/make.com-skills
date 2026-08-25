@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "make-automation-guru"
-IGNORED = shutil.ignore_patterns(".git", ".learning", "__pycache__", "*.pyc", ".DS_Store")
+IGNORED = shutil.ignore_patterns(".git", ".learning", ".tools", "__pycache__", "*.pyc", ".DS_Store")
 
 
 def package_destination(target: str, scope: str, project: Path) -> Path:

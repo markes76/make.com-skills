@@ -9,7 +9,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCLUDED_PARTS = {".git", ".learning", "dist", "__pycache__"}
+EXCLUDED_PARTS = {".git", ".learning", ".tools", "dist", "__pycache__"}
 EXCLUDED_NAMES = {"make_public_docs.jsonl", ".DS_Store"}
 
 

@@ -1,6 +1,7 @@
 # Local documentation and learning data may contain protected information.
 .learning/
 dist/
+.tools/
 make_public_docs.jsonl
 *.pyc
 __pycache__/
