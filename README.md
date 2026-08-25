@@ -31,6 +31,7 @@ It is an AI instruction package with a terminal companion—not a replacement fo
 - Safe scenario lifecycle guidance: create inactive, test with controlled input, inspect executions, then activate only on request.
 - Explicit custom-app and API/CLI boundaries, so agents do not pretend an MCP scenario tool can publish a Make app.
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
+- A small, freshness-gated community-resolution ledger: only public, accepted or explicitly confirmed outcomes that are rechecked against official docs or live schema. It never stores raw posts, screenshots, blueprints, or user data.
 - Evaluation scenarios, MCP capability-log discipline, and a reproducible release builder so the guidance can mature without turning anecdotes into facts.
 - An AI-first engagement protocol: when a scenario is mentioned, the agent performs live due diligence, distinguishes evidence from hypotheses, then leads review, fix, build, troubleshooting, or documentation work.
 - `make-skills`, an installable companion for the official CLI: secure authentication, minimized read-only evidence, and explicitly consented private-learning storage.
@@ -154,6 +155,8 @@ python3 scripts/build_source_index.py /path/to/make_public_docs.jsonl
 This refreshes `sources/make-docs-index.json`. See [sources/README.md](sources/README.md) for scope and provenance.
 
 The repository also has a weekly metadata-only watch of a small allowlist of official Make URLs. It opens a GitHub review issue when an upstream signal changes; a maintainer validates the page and ships a normal versioned update only if the guidance actually needs to change. See [the public source watch](docs/UPSTREAM_SOURCE_WATCH.md).
+
+Recent public Community resolutions are advisory research only and have a 365-day expiry. They are source-linked, must show a confirmed outcome, and are never used in place of Make's current docs or live MCP schema. See [community source provenance](sources/README.md).
 
 ## Contributing
 

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "purpose": "Fresh, public Make Community outcomes retained only as advisory prompts and cross-checked against official Make material.",
+  "retention": "metadata and sanitized paraphrases only",
+  "patterns": [
+    {
+      "id": "http-v4-pagination-config-completeness",
+      "topic_url": "https://community.make.com/t/http-v4-module-pagination-doesnt-seem-to-be-working-for-graphql/100669",
+      "accepted_answer_url": "https://community.make.com/t/http-v4-module-pagination-doesnt-seem-to-be-working-for-graphql/100669/4",
+      "accepted_at": "2026-01-27T16:21:47Z",
+      "outcome_summary": "The author confirmed that completing the selected pagination parameter configuration resolved a native HTTP v4 request that had returned only its first page.",
+      "official_cross_checks": [
+        "https://apps.make.com/http",
+        "https://developers.make.com/custom-apps-documentation/component-blocks/api/pagination"
+      ]
+    },
+    {
+      "id": "iterator-bounded-slice",
+      "topic_url": "https://community.make.com/t/advancing-the-first-bundle-coming-out-of-an-iterator/105788",
+      "accepted_answer_url": "https://community.make.com/t/advancing-the-first-bundle-coming-out-of-an-iterator/105788/5",
+      "accepted_at": "2026-03-18T16:08:44Z",
+      "outcome_summary": "The author explicitly marked the issue solved after applying an array slice to bound which values entered an iterator.",
+      "official_cross_checks": [
+        "https://help.make.com/iterator",
+        "https://help.make.com/array-functions"
+      ]
+    },
+    {
+      "id": "array-aggregator-source-is-fanout",
+      "topic_url": "https://community.make.com/t/array-aggregator-is-not-aggregating/105600",
+      "accepted_answer_url": "https://community.make.com/t/array-aggregator-is-not-aggregating/105600/3",
+      "accepted_at": "2026-03-14T22:06:10Z",
+      "outcome_summary": "The author confirmed the aggregation worked after selecting the iterator, rather than the immediately preceding module, as the array aggregator source.",
+      "official_cross_checks": [
+        "https://help.make.com/flow-control",
+        "https://help.make.com/iterator"
+      ]
+    },
+    {
+      "id": "controlled-run-learns-mapping-shape",
+      "topic_url": "https://community.make.com/t/cannot-map-fields-after-iterator/103405",
+      "accepted_answer_url": "https://community.make.com/t/cannot-map-fields-after-iterator/103405/9",
+      "accepted_at": "2026-02-17T16:52:44Z",
+      "outcome_summary": "The author confirmed that running each safe upstream step in sequence exposed the observed fields needed for downstream mapping.",
+      "official_cross_checks": [
+        "https://help.make.com/iterator",
+        "https://help.make.com/mapping"
+      ]
+    }
+  ]
+}
