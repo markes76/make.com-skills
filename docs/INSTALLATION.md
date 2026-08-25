@@ -47,13 +47,13 @@ It reads only the selected scenario and emits a minimized report. Add `--save` t
 After the maintainer completes the one-time public npm publish, users can invoke the packaged bridge with:
 
 ```bash
-npx --yes @markes76/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest wizard
 ```
 
 or install it globally:
 
 ```bash
-npm install --global @markes76/make-com-skills
+npm install --global @markesai/make-com-skills
 make-com-skills notifications enable
 make-com-skills wizard
 ```

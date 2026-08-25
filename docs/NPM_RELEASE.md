@@ -7,13 +7,13 @@ The npm distribution is a thin, zero-dependency Node bridge around the bundled P
 After the first public npm publication, users can run the newest released companion without a global install:
 
 ```bash
-npx --yes @markes76/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest wizard
 ```
 
 For a reusable global command:
 
 ```bash
-npm install --global @markes76/make-com-skills
+npm install --global @markesai/make-com-skills
 make-com-skills wizard
 make-com-skills update
 ```
@@ -30,14 +30,14 @@ An update delivers public, version-controlled guidance and code only. It does no
 
 ## One-time maintainer setup
 
-The intended public package is `@markes76/make-com-skills`. Before the first release, the maintainer must confirm that the corresponding npm account or organization controls that scope; a registry `404` only proves that no public package can currently be read, not that the name is reservable.
+The intended public package is `@markesai/make-com-skills`. Before the first release, the maintainer must confirm that `npm whoami` reports the `markesai` publishing account; a registry `404` only proves that no public package can currently be read, not that the name is reservable.
 
-1. Enable npm two-factor authentication for the publishing account and claim/create the `@markes76` scope if necessary.
+1. Enable npm two-factor authentication for the `markesai` publishing account and confirm `npm whoami` reports `markesai`.
 2. From a clean, validated checkout, make the initial public publish using npm’s interactive authentication and `npm publish --access public` from `npm/`. This establishes the package record; do not paste an npm token into this repository or GitHub Actions.
 3. Configure npm trusted publishing for `markes76/make.com-skills` and the exact workflow filename `publish-npm.yml`. npm’s current CLI can configure the same relationship with a command similar to:
 
    ```bash
-   npm trust github @markes76/make-com-skills \
+   npm trust github @markesai/make-com-skills \
      --repo markes76/make.com-skills \
      --file publish-npm.yml \
      --environment npm-publish \

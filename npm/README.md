@@ -1,6 +1,6 @@
 # Make.com Skills npm bridge
 
-This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills Python companion. Its intended public package name is `@markes76/make-com-skills`. A package configuration in Git is not itself a publication: check the npm registry before telling users that a release exists.
+This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills Python companion. Its intended public package name is `@markesai/make-com-skills`. A package configuration in Git is not itself a publication: check the npm registry before telling users that a release exists.
 
 > **Unofficial community companion · use at your own risk.** This is not an official Make.com package or the official `make-cli`. Review every proposed command and third-party side effect. See [NOTICE.md](NOTICE.md).
 
@@ -30,11 +30,11 @@ The bridge checks `MAKE_SKILLS_PYTHON` first, then checks `python3`, `python`, a
 Once a public release exists, the intended end-user entry points are:
 
 ```sh
-npx --yes @markes76/make-com-skills@latest wizard
-npx --yes @markes76/make-com-skills@latest doctor
-npx --yes @markes76/make-com-skills@latest review 1905530 --json
-npx --yes @markes76/make-com-skills@latest update
-npx --yes @markes76/make-com-skills@latest notifications enable
+npx --yes @markesai/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest doctor
+npx --yes @markesai/make-com-skills@latest review 1905530 --json
+npx --yes @markesai/make-com-skills@latest update
+npx --yes @markesai/make-com-skills@latest notifications enable
 make-skills-npx wizard
 ```
 
@@ -58,7 +58,7 @@ After a user enables notifications, `doctor` and `wizard` make at most one regis
 
 Before users can run the public npx command, maintainers need to:
 
-1. Confirm that the publishing account controls the `@markes76` scope. A registry `404` does not reserve the name.
+1. Confirm that `npm whoami` reports the publishing account as `markesai`. A registry `404` does not reserve the name.
 2. Complete the one-time trusted-publisher configuration described in [`../docs/NPM_RELEASE.md`](../docs/NPM_RELEASE.md), including the protected `npm-publish` GitHub environment.
 3. Publish a versioned tarball that includes `python/make_skills`; do not depend on a parent repository path at runtime.
 4. Publish release notes and keep update checks opt-in (for example, users run `make-com-skills update` or select an update check in the wizard). Never silently install an update.

@@ -116,8 +116,8 @@ if f'__version__ = "{plugin["version"]}"' not in package_version:
     fail("make_skills package version must match plugin.json")
 
 npm_package = json.loads((ROOT / "npm/package.json").read_text(encoding="utf-8"))
-if npm_package.get("name") != "@markes76/make-com-skills":
-    fail("npm package must use the documented @markes76/make-com-skills scope")
+if npm_package.get("name") != "@markesai/make-com-skills":
+    fail("npm package must use the documented @markesai/make-com-skills scope")
 if npm_package.get("version") != plugin["version"]:
     fail("npm/package.json version must match plugin.json")
 if npm_package.get("private") is True:

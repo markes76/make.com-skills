@@ -86,16 +86,16 @@ Add `--save` only if the minimized local report should be written to the private
 
 ### Run with npx (after the first public npm release)
 
-The public npm package is configured as `@markes76/make-com-skills`. Once the maintainer has completed the initial npm trusted-publisher setup, users can run:
+The public npm package is configured as `@markesai/make-com-skills`. Once the maintainer has completed the initial npm trusted-publisher setup, users can run:
 
 ```bash
-npx --yes @markes76/make-com-skills@latest wizard
+npx --yes @markesai/make-com-skills@latest wizard
 ```
 
 or install it globally and opt into update notices:
 
 ```bash
-npm install --global @markes76/make-com-skills
+npm install --global @markesai/make-com-skills
 make-com-skills notifications enable
 make-com-skills wizard
 ```
