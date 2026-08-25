@@ -1,7 +1,11 @@
 # Local documentation and learning data may contain protected information.
 .learning/
+.make-com-skills/
 dist/
 .tools/
+make-skills-plans/
+make-skills-reviews/
+make-skills-change-plans/
 make_public_docs.jsonl
 *.pyc
 __pycache__/

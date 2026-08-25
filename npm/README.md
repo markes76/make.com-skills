@@ -1,0 +1,66 @@
+# Make.com Skills npm bridge
+
+This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills Python companion. Its intended public package name is `@markes76/make-com-skills`. A package configuration in Git is not itself a publication: check the npm registry before telling users that a release exists.
+
+> **Unofficial community companion · use at your own risk.** This is not an official Make.com package or the official `make-cli`. Review every proposed command and third-party side effect. See [NOTICE.md](NOTICE.md).
+
+The bridge does not implement Make API operations itself. It discovers Python 3, adds the bundled `python/` directory to `PYTHONPATH`, and invokes `python -m make_skills`. The Python companion continues to use the official Make CLI for API access and retains its read-first, approval-gated behavior.
+
+## Local development
+
+From this directory:
+
+```sh
+npm run bundle-python
+node bin/make-com-skills.js --version
+node bin/make-com-skills.js doctor --make-cli /absolute/path/to/make-cli
+node bin/make-com-skills.js wizard --make-cli /absolute/path/to/make-cli
+node bin/make-com-skills.js review 1905530 --json --make-cli /absolute/path/to/make-cli
+node bin/make-com-skills.js update
+node bin/make-com-skills.js notifications enable
+npm test
+```
+
+`npm install ./npm` also runs the local `prepare` hook, which creates the generated `python/make_skills` bundle. The generated bundle is deliberately ignored by Git; `npm pack` runs the same bundle step before it creates a tarball.
+
+The bridge checks `MAKE_SKILLS_PYTHON` first, then checks `python3`, `python`, and the system Python on macOS/Linux; Windows checks `py -3`, then `python3` and `python`. Set `MAKE_SKILLS_MAKE_CLI` or pass `--make-cli` to select the official Make CLI.
+
+## Commands and update behavior
+
+Once a public release exists, the intended end-user entry points are:
+
+```sh
+npx --yes @markes76/make-com-skills@latest wizard
+npx --yes @markes76/make-com-skills@latest doctor
+npx --yes @markes76/make-com-skills@latest review 1905530 --json
+npx --yes @markes76/make-com-skills@latest update
+npx --yes @markes76/make-com-skills@latest notifications enable
+make-skills-npx wizard
+```
+
+Running no command starts `wizard`. `update` makes one HTTPS request to the npm registry, displays a version comparison and prints optional install commands. It never runs `npm install`, modifies a package, changes Make resources, or sends scenario data to npm.
+
+### Opt-in update notifications
+
+Update notifications are off by default. Users who want a lightweight update notice can explicitly opt in:
+
+```sh
+make-com-skills notifications status
+make-com-skills notifications enable
+make-com-skills notifications disable
+```
+
+`status` does not create a file. `enable` creates a small local preference containing only the opt-in state and last registry-check timestamp; `disable` removes that preference file. The default location is `~/.config/make-com-skills` on macOS/Linux and `%APPDATA%/make-com-skills` on Windows. Set `MAKE_COM_SKILLS_CONFIG_DIR` to override the location, including in managed environments and tests.
+
+After a user enables notifications, `doctor` and `wizard` make at most one registry check every 24 hours. If a newer package exists, the bridge writes a notice to stderr (so `doctor --json` remains valid) with one explicit `npm install --global ...` command. It never installs, downloads, or changes a Make resource automatically. Failed or unavailable registry checks are silent and do not block the command.
+
+## Required release work before publishing
+
+Before users can run the public npx command, maintainers need to:
+
+1. Confirm that the publishing account controls the `@markes76` scope. A registry `404` does not reserve the name.
+2. Complete the one-time trusted-publisher configuration described in [`../docs/NPM_RELEASE.md`](../docs/NPM_RELEASE.md), including the protected `npm-publish` GitHub environment.
+3. Publish a versioned tarball that includes `python/make_skills`; do not depend on a parent repository path at runtime.
+4. Publish release notes and keep update checks opt-in (for example, users run `make-com-skills update` or select an update check in the wizard). Never silently install an update.
+
+The `prepack` script refreshes `npm/python/make_skills` from the root `src/make_skills` in a repository checkout. In a packed or installed release, the root source is absent and the already-bundled copy remains untouched, so all runtime paths remain relative to the package root.

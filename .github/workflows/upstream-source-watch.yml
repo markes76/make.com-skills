@@ -1,0 +1,111 @@
+name: Watch official Make source metadata
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  watch:
+    name: Metadata-only public source watch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compare allowlisted official-source metadata
+        id: source_watch
+        env:
+          REPORT_PATH: ${{ runner.temp }}/make-upstream-source-report.json
+        run: |
+          set -euo pipefail
+          python3 scripts/check_upstream_sources.py --report "$REPORT_PATH"
+          python3 - "$REPORT_PATH" >> "$GITHUB_OUTPUT" <<'PY'
+          import json
+          import sys
+
+          report = json.load(open(sys.argv[1], encoding="utf-8"))
+          print("candidate_changes={}".format(report["summary"]["candidate_changes"]))
+          print("has_candidate_changes={}".format("true" if report["summary"]["candidate_changes"] else "false"))
+          PY
+
+      - name: Upload metadata report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: make-upstream-source-metadata-report
+          path: ${{ runner.temp }}/make-upstream-source-report.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Open or update a human-review issue
+        if: steps.source_watch.outputs.has_candidate_changes == 'true'
+        uses: actions/github-script@v7
+        env:
+          REPORT_PATH: ${{ runner.temp }}/make-upstream-source-report.json
+        with:
+          script: |
+            const fs = require("fs");
+            const report = JSON.parse(fs.readFileSync(process.env.REPORT_PATH, "utf8"));
+            const marker = "<!-- make-com-skills:upstream-source-watch -->";
+            const title = "Review: official Make source metadata changed";
+            const compact = (snapshot) => {
+              if (!snapshot) return "none (new baseline source)";
+              return [
+                `status=${snapshot.status ?? "unknown"}`,
+                `http=${snapshot.status_code ?? "n/a"}`,
+                `etag=${snapshot.etag ? "present" : "absent"}`,
+                `last-modified=${snapshot.last_modified ? "present" : "absent"}`,
+              ].join(", ");
+            };
+            const signals = report.changes.map((change) => [
+              `- \`${change.id}\` (${change.kind}): \`${change.classification}\`; ` +
+              `fields: ${change.changed_fields.map((field) => `\`${field}\``).join(", ") || "baseline"}; ` +
+              `before: ${compact(change.before)}; after: ${compact(change.after)}`,
+            ].join("\n");
+            const body = [
+              marker,
+              "## Metadata-only review requested",
+              "",
+              "The scheduled checker observed candidate HTTP metadata signals on the small allowlist in `sources/upstream-manifest.json`. This is **not** a claim that Make documentation or behavior changed.",
+              "",
+              "The checker read and stored no page bodies, cookies, credentials, tokens, scenario data, connections, executions, or customer data. It did not invoke Make MCP, the official Make CLI, or any Make mutation.",
+              "",
+              "### Candidate signals",
+              signals,
+              "",
+              "### Required human review",
+              "",
+              "1. Open the matching official URL from `sources/upstream-manifest.json` and inspect it manually.",
+              "2. Determine whether the repository's public guidance needs a normal reviewed change; do not infer product behavior from header changes alone.",
+              "3. If the signal is accepted as the current baseline, run `python3 scripts/check_upstream_sources.py --write-state` locally, inspect the metadata-only diff, and commit it in a reviewed pull request.",
+              "",
+              "The workflow never updates the baseline, skill content, or a Make scenario automatically. The JSON artifact attached to this run contains only the same selected metadata.",
+              "",
+              `Latest check: ${report.generated_at}`,
+            ].join("\n");
+
+            const { owner, repo } = context.repo;
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: "open",
+              per_page: 100,
+            });
+            const existing = openIssues.find((issue) => issue.title === title && issue.body && issue.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.update({ owner, repo, issue_number: existing.number, title, body });
+              core.info(`Updated review issue #${existing.number}`);
+            } else {
+              const { data: issue } = await github.rest.issues.create({ owner, repo, title, body });
+              core.info(`Created review issue #${issue.number}`);
+            }

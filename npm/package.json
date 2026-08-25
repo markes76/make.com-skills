@@ -1,0 +1,48 @@
+{
+  "name": "@markes76/make-com-skills",
+  "version": "0.4.0",
+  "description": "Unofficial community npx bridge for the Make.com Skills companion",
+  "license": "MIT",
+  "homepage": "https://github.com/markes76/make.com-skills#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markes76/make.com-skills.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markes76/make.com-skills/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "make",
+    "make.com",
+    "automation",
+    "mcp",
+    "cli",
+    "agent-skills"
+  ],
+  "type": "commonjs",
+  "bin": {
+    "make-com-skills": "bin/make-com-skills.js",
+    "make-skills-npx": "bin/make-com-skills.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "python",
+    "scripts",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "bundle-python": "node scripts/bundle-python.cjs",
+    "prepare": "node scripts/bundle-python.cjs",
+    "prepack": "node scripts/bundle-python.cjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

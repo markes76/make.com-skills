@@ -1,0 +1,93 @@
+{
+  "manifest_path": "sources/upstream-manifest.json",
+  "policy": {
+    "content_persisted": false,
+    "metadata_only": true,
+    "review_required_before_guidance_change": true
+  },
+  "schema_version": 1,
+  "sources": {
+    "apps-catalog-root": {
+      "content_length": null,
+      "content_type": "text/html; charset=utf-8",
+      "etag": null,
+      "final_url": "https://apps.make.com/",
+      "last_modified": "Tue, 25 Aug 2026 07:39:11 GMT",
+      "status": "observed",
+      "status_code": 200
+    },
+    "developer-hub-root": {
+      "content_length": "644506",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"wr0vrizks9dt9s\"",
+      "final_url": "https://developers.make.com/",
+      "last_modified": null,
+      "status": "observed",
+      "status_code": 200
+    },
+    "help-active-inactive-scenarios": {
+      "content_length": null,
+      "content_type": "text/html; charset=utf-8",
+      "etag": null,
+      "final_url": "https://help.make.com/active-and-inactive-scenarios",
+      "last_modified": "Tue, 25 Aug 2026 11:59:39 GMT",
+      "status": "observed",
+      "status_code": 200
+    },
+    "help-center-root": {
+      "content_length": null,
+      "content_type": "text/html; charset=utf-8",
+      "etag": null,
+      "final_url": "https://help.make.com/",
+      "last_modified": "Tue, 25 Aug 2026 11:59:39 GMT",
+      "status": "observed",
+      "status_code": 200
+    },
+    "help-scenarios": {
+      "content_length": null,
+      "content_type": "text/html; charset=utf-8",
+      "etag": null,
+      "final_url": "https://help.make.com/scenarios",
+      "last_modified": "Tue, 25 Aug 2026 11:59:39 GMT",
+      "status": "observed",
+      "status_code": 200
+    },
+    "http-app-reference": {
+      "content_length": null,
+      "content_type": "text/html; charset=utf-8",
+      "etag": null,
+      "final_url": "https://apps.make.com/http",
+      "last_modified": "Tue, 25 Aug 2026 07:39:11 GMT",
+      "status": "observed",
+      "status_code": 200
+    },
+    "mcp-server-root": {
+      "content_length": "1195652",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"h9w0aypq2hpmhm\"",
+      "final_url": "https://developers.make.com/mcp-server",
+      "last_modified": null,
+      "status": "observed",
+      "status_code": 200
+    },
+    "official-cli-authentication": {
+      "content_length": "735732",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"3m8t40ikhofroa\"",
+      "final_url": "https://developers.make.com/make-cli/make-cli/authenticate-the-make-cli",
+      "last_modified": null,
+      "status": "observed",
+      "status_code": 200
+    },
+    "official-cli-scenarios": {
+      "content_length": "4069945",
+      "content_type": "text/html; charset=utf-8",
+      "etag": "\"4dkcbazhqr2f8db\"",
+      "final_url": "https://developers.make.com/make-cli/make-cli/make-cli-reference/scenarios",
+      "last_modified": null,
+      "status": "observed",
+      "status_code": 200
+    }
+  },
+  "written_at": "2026-08-25T13:36:39+00:00"
+}

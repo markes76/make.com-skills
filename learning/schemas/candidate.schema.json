@@ -7,26 +7,32 @@
     "id",
     "created_at",
     "status",
+    "origin",
+    "source_url",
     "title",
     "kind",
     "symptom",
     "root_cause",
     "resolution",
     "evidence",
-    "expires_after_days"
+    "expires_after_days",
+    "review_status"
   ],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "id": {"type": "string", "pattern": "^[a-f0-9]{16}$"},
     "created_at": {"type": "string", "format": "date-time"},
     "status": {"const": "candidate"},
-    "title": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "origin": {"const": "official_public_documentation"},
+    "source_url": {"type": "string", "format": "uri", "pattern": "^https://(developers\\.make\\.com|apps\\.make\\.com|help\\.make\\.com)/"},
+    "title": {"type": "string", "minLength": 1, "maxLength": 160},
     "kind": {"enum": ["schema", "runtime", "design", "api", "tooling"]},
-    "symptom": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "root_cause": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "resolution": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "evidence": {"type": "string", "minLength": 1, "maxLength": 2000},
-    "expires_after_days": {"enum": [90, 180]}
+    "symptom": {"type": "string", "minLength": 1, "maxLength": 800},
+    "root_cause": {"type": "string", "minLength": 1, "maxLength": 800},
+    "resolution": {"type": "string", "minLength": 1, "maxLength": 800},
+    "evidence": {"type": "string", "minLength": 1, "maxLength": 800},
+    "expires_after_days": {"enum": [90, 180]},
+    "review_status": {"const": "pending_maintainer_review"}
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }

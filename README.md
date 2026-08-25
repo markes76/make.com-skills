@@ -1,8 +1,28 @@
-# Make.com Skills
+<p align="center">
+  <img src="assets/make-skills-cli-mark.svg" width="132" alt="Make Skills CLI community mark: a terminal prompt and routing nodes" />
+</p>
+
+<h1 align="center">Make.com Skills</h1>
+
+<p align="center"><strong>Schema-aware automation guidance, an official-CLI companion, and portable skills for modern agent tools.</strong></p>
+
+<p align="center"><strong>Unofficial community companion · use at your own risk</strong></p>
+
+<p align="center">
+  <img src="assets/make-skills-cli-hero.png" alt="Abstract terminal prompt connected to automation routing nodes" />
+</p>
 
 An open, portable Make.com skill pack for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. Its canonical router is `make-automation-guru`; it supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
 
 It is an instruction package and companion wizard—not a replacement for Make authorization, module schemas, connections, or user approval. The official [`make-cli`](https://github.com/integromat/make-cli) remains the API runtime; this repository adds guidance, review, planning, and governed learning on top.
+
+> Community notice: this is independent community software, not an official Make.com package or a replacement for the official CLI. Review every plan and command before approving it; no automation outcome is guaranteed. See [COMMUNITY_NOTICE.md](COMMUNITY_NOTICE.md).
+
+| Use it for | Primary path | Safe fallback |
+| --- | --- | --- |
+| Live schemas, connections, scenario design, and approved changes | Make MCP in the active agent client | Official CLI capability check + local skill handoff |
+| Authenticated account/scenario reads | Official `make-cli` through `make-skills` | Make's documented editor/API path |
+| Review, troubleshooting, documentation, and enterprise change plans | `make-skills wizard` / `review` + the skill bundle | Read-only report and a human-approved plan |
 
 ## What it provides
 
@@ -13,6 +33,7 @@ It is an instruction package and companion wizard—not a replacement for Make a
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
 - Evaluation scenarios, MCP capability-log discipline, and a reproducible release builder so the guidance can mature without turning anecdotes into facts.
 - `make-skills`, an installable companion that checks the official CLI, guides secure authentication, reviews scenarios, produces conservative enhancement prompts, and creates safe local design handoffs for new scenarios.
+- A versioned npm/npx bridge that bundles the companion, offers opt-in update notification, and is released through protected npm trusted publishing after its one-time publisher setup.
 
 ## Install the companion wizard
 
@@ -53,7 +74,33 @@ If the official binary is not on `PATH`, provide its location without copying it
 make-skills --make-cli /path/to/make-cli wizard
 ```
 
-The wizard invokes the official CLI's own login flow when needed, then starts read-only. Scenario review asks for the displayed number or exact scenario ID, retrieves that one scenario, and saves a derived report without storing its raw blueprint. It can also generate a local design handoff, but it never creates or activates a Make scenario from a vague request.
+The wizard invokes the official CLI's own login flow when needed, then starts read-only. Scenario review asks for the displayed number or exact scenario ID, retrieves that one scenario, classifies its findings, asks what the user wants to change/adapt/fix/build/document, and saves a derived report plus a reviewable local plan under `~/.make-com-skills/` by default. It can also maintain an explicitly consented, private personal skill there; none of those artifacts are committed or pushed. It never creates or activates a Make scenario from a vague request.
+
+For an exact, non-interactive read-only review:
+
+```bash
+make-skills review 1905530 --json
+```
+
+Add `--save` only if the minimized local report should be written to the private default `~/.make-com-skills/reviews/` (or to an explicitly selected `--reviews-dir`).
+
+### Run with npx (after the first public npm release)
+
+The public npm package is configured as `@markes76/make-com-skills`. Once the maintainer has completed the initial npm trusted-publisher setup, users can run:
+
+```bash
+npx --yes @markes76/make-com-skills@latest wizard
+```
+
+or install it globally and opt into update notices:
+
+```bash
+npm install --global @markes76/make-com-skills
+make-com-skills notifications enable
+make-com-skills wizard
+```
+
+The bridge detects Python 3, launches the bundled companion, and still uses the separately installed official Make CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing; until the initial publish completes, use the GitHub clone/Python path above.
 
 ## Install / use
 
@@ -79,9 +126,11 @@ The skill directs the agent to discover the team, apps, module fields, valid con
 
 ## MCP versus API/CLI
 
-Use Make MCP first when it is available: it provides live module specifications, connections, scenario state, creation, patching, execution inspection, and webhook learning.
+Use Make MCP first when it is available. The active client may expose live module specifications, connections, scenario state, creation, patching, execution inspection, and webhook learning; discover its actual tools and permissions before relying on any capability.
 
 When MCP cannot support an operation, use the official Make CLI as the authenticated API runtime and use this package as the guardrail layer. See [official CLI companion](references/official-cli.md) and [extension plan](references/cli-delivery.md).
+
+The fallback does not mean “try random API calls.” The agent identifies the missing MCP capability, checks whether the installed official CLI supports the exact action, creates a minimal approval-gated plan from live CLI/MCP data and this skill bundle, and otherwise directs the user to Make's documented editor path. The community companion never takes responsibility for a third-party change simply because it suggested it.
 
 ## Source index
 
@@ -92,6 +141,8 @@ python3 scripts/build_source_index.py /path/to/make_public_docs.jsonl
 ```
 
 This refreshes `sources/make-docs-index.json`. See [sources/README.md](sources/README.md) for scope and provenance.
+
+The repository also has a weekly metadata-only watch of a small allowlist of official Make URLs. It opens a GitHub review issue when an upstream signal changes; a maintainer validates the page and ships a normal versioned update only if the guidance actually needs to change. See [the public source watch](docs/UPSTREAM_SOURCE_WATCH.md).
 
 ## Contributing
 

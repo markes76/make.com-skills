@@ -14,6 +14,10 @@ from typing import Any, Sequence
 class OfficialCliError(RuntimeError):
     """The official Make CLI could not be found or complete a command."""
 
+    def __init__(self, message: str, reason: str = "command") -> None:
+        super().__init__(message)
+        self.reason = reason
+
 
 @dataclass(frozen=True)
 class CommandResult:
@@ -41,8 +45,14 @@ def run(arguments: Sequence[str], executable: str | None = None) -> CommandResul
     command = [locate(executable), *arguments]
     completed = subprocess.run(command, capture_output=True, text=True, check=False)
     if completed.returncode:
-        detail = (completed.stderr or completed.stdout).strip() or f"exit status {completed.returncode}"
-        raise OfficialCliError(f"Official make-cli {' '.join(arguments)} failed: {detail}")
+        # Provider diagnostics can echo credential-adjacent input, URLs, or
+        # execution data. Classify the error internally but never reprint it.
+        diagnostic = (completed.stderr or completed.stdout).casefold()
+        reason = "authentication" if any(marker in diagnostic for marker in ("api key is required", "zone is required", "unauthorized", "authentication")) else "command"
+        raise OfficialCliError(
+            f"Official make-cli command failed with exit status {completed.returncode}. Run the official CLI directly to inspect its local diagnostic.",
+            reason,
+        )
     return CommandResult(tuple(arguments), completed.stdout, completed.stderr)
 
 

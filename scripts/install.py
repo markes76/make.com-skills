@@ -14,7 +14,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "make-automation-guru"
-IGNORED = shutil.ignore_patterns(".git", ".learning", ".tools", "__pycache__", "*.pyc", ".DS_Store")
+IGNORED = shutil.ignore_patterns(
+    ".git",
+    ".learning",
+    ".tools",
+    "dist",
+    ".venv",
+    "venv",
+    "node_modules",
+    "make-skills-plans",
+    "make-skills-reviews",
+    "make-skills-change-plans",
+    "make_public_docs.jsonl",
+    "python",
+    "__pycache__",
+    "*.pyc",
+    ".DS_Store",
+)
 
 
 def package_destination(target: str, scope: str, project: Path) -> Path:
@@ -36,6 +52,9 @@ def gemini_context() -> str:
 
 
 def copy_bundle(destination: Path, apply: bool, force: bool) -> None:
+    source_symlink = next((path for path in ROOT.rglob("*") if path.is_symlink()), None)
+    if source_symlink:
+        raise SystemExit(f"Refusing to install a bundle containing a symlink: {source_symlink}")
     if destination.exists() and not force:
         raise SystemExit(f"Refusing to overwrite existing bundle: {destination} (use --force)")
     print(f"bundle: {ROOT} -> {destination}")

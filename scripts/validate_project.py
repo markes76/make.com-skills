@@ -11,6 +11,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = (
     "README.md",
+    "COMMUNITY_NOTICE.md",
+    "assets/make-skills-cli-mark.svg",
+    "assets/make-skills-cli-hero.png",
+    "assets/README.md",
     "VERSION",
     "plugin.json",
     "pyproject.toml",
@@ -26,20 +30,38 @@ REQUIRED = (
     "references/ai-agents.md",
     "references/cli-delivery.md",
     "references/official-cli.md",
+    "references/enterprise-operations.md",
     "references/continuous-learning.md",
     "references/error-playbook.md",
     "references/approved-lessons.md",
     "docs/LEARNING_LOOP.md",
     "docs/INSTALLATION.md",
     "docs/DEVELOPMENT.md",
+    "docs/BRAND.md",
+    "docs/NPM_RELEASE.md",
+    "docs/UPSTREAM_SOURCE_WATCH.md",
     "docs/MCP_CAPABILITY_LOG.md",
     "evaluations/README.md",
     "learning/schemas/candidate.schema.json",
     "sources/README.md",
+    "sources/upstream-manifest.json",
+    "sources/upstream-source-state.json",
     "src/make_skills/cli.py",
     "src/make_skills/official_cli.py",
+    "src/make_skills/personal_learning.py",
     "src/make_skills/wizard.py",
     "scripts/start_wizard.py",
+    "scripts/sync_npm_version.py",
+    "scripts/check_upstream_sources.py",
+    "scripts/learning_safety.py",
+    ".github/workflows/publish-npm.yml",
+    ".github/workflows/upstream-source-watch.yml",
+    "npm/package.json",
+    "npm/bin/make-com-skills.js",
+    "npm/lib/bridge.cjs",
+    "npm/scripts/bundle-python.cjs",
+    "npm/test/bridge.test.cjs",
+    "npm/NOTICE.md",
     "tests/TEST.md",
 )
 
@@ -58,6 +80,10 @@ if not skill.startswith("---\nname: make-automation-guru\n"):
     fail("skill frontmatter must identify make-automation-guru")
 if "[TODO:" in skill:
     fail("skill contains an unfinished TODO")
+
+readme = (ROOT / "README.md").read_text(encoding="utf-8")
+if "Unofficial community companion" not in readme:
+    fail("README must identify the project as an unofficial community companion")
 
 index = ROOT / "sources/make-docs-index.json"
 if index.exists():
@@ -88,5 +114,19 @@ if 'make-skills = "make_skills.cli:main"' not in pyproject:
 package_version = (ROOT / "src/make_skills/__init__.py").read_text(encoding="utf-8")
 if f'__version__ = "{plugin["version"]}"' not in package_version:
     fail("make_skills package version must match plugin.json")
+
+npm_package = json.loads((ROOT / "npm/package.json").read_text(encoding="utf-8"))
+if npm_package.get("name") != "@markes76/make-com-skills":
+    fail("npm package must use the documented @markes76/make-com-skills scope")
+if npm_package.get("version") != plugin["version"]:
+    fail("npm/package.json version must match plugin.json")
+if npm_package.get("private") is True:
+    fail("npm package must not remain private after release configuration")
+if npm_package.get("publishConfig", {}).get("access") != "public":
+    fail("npm package must declare public publish access")
+if set(npm_package.get("bin", {})) != {"make-com-skills", "make-skills-npx"}:
+    fail("npm package must expose both documented command aliases")
+if "python" not in npm_package.get("files", []) or "NOTICE.md" not in npm_package.get("files", []):
+    fail("npm package must include the bundled Python companion and community notice")
 
 print("Project validation passed")

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title description">
+  <title id="title">Make Skills CLI community mark</title>
+  <desc id="description">An original terminal prompt and routing-node mark for the community Make Skills project.</desc>
+  <defs>
+    <linearGradient id="surface" x1="24" y1="20" x2="232" y2="236" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a2841"/>
+      <stop offset="1" stop-color="#061421"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="43" y1="71" x2="203" y2="184" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#39e7d0"/>
+      <stop offset="1" stop-color="#c8f75a"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="52" fill="url(#surface)"/>
+  <path d="M53 80 106 128 53 176" fill="none" stroke="url(#signal)" stroke-linecap="round" stroke-linejoin="round" stroke-width="20" filter="url(#glow)"/>
+  <path d="M121 177h39" fill="none" stroke="#eafff7" stroke-linecap="round" stroke-width="15"/>
+  <path d="M158 90c16 0 27 11 27 27v6c0 12 8 20 20 20h5" fill="none" stroke="#39e7d0" stroke-linecap="round" stroke-width="6"/>
+  <path d="M158 166c16 0 27-11 27-27v-7c0-12 8-20 20-20h5" fill="none" stroke="#c8f75a" stroke-linecap="round" stroke-width="6"/>
+  <circle cx="153" cy="90" r="10" fill="#eafff7"/>
+  <circle cx="214" cy="143" r="12" fill="#39e7d0"/>
+  <circle cx="153" cy="166" r="10" fill="#c8f75a"/>
+  <path d="M42 45h28M186 211h28" fill="none" stroke="#1c526b" stroke-linecap="round" stroke-width="6"/>
+</svg>

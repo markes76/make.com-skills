@@ -9,13 +9,28 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCLUDED_PARTS = {".git", ".learning", ".tools", "dist", "__pycache__"}
+EXCLUDED_PARTS = {
+    ".git",
+    ".learning",
+    ".tools",
+    "dist",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "node_modules",
+    "make-skills-plans",
+    "make-skills-reviews",
+    "make-skills-change-plans",
+}
 EXCLUDED_NAMES = {"make_public_docs.jsonl", ".DS_Store"}
 
 
 def include(path: Path) -> bool:
+    if path.is_symlink():
+        return False
     relative = path.relative_to(ROOT)
-    return not (set(relative.parts) & EXCLUDED_PARTS or path.name in EXCLUDED_NAMES or path.suffix == ".pyc")
+    generated_npm_bundle = relative.parts[:2] == ("npm", "python")
+    return not (set(relative.parts) & EXCLUDED_PARTS or generated_npm_bundle or path.name in EXCLUDED_NAMES or path.suffix == ".pyc")
 
 
 def main() -> None:
@@ -31,7 +46,7 @@ def main() -> None:
     count = 0
     with ZipFile(output, "w", compression=ZIP_DEFLATED) as archive:
         for path in sorted(ROOT.rglob("*")):
-            if not path.is_file() or not include(path) or path.resolve() == output:
+            if path.is_symlink() or not path.is_file() or not include(path) or path.resolve() == output:
                 continue
             archive.write(path, Path("make.com-skills") / path.relative_to(ROOT))
             count += 1

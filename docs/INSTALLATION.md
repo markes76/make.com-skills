@@ -34,6 +34,32 @@ python3 scripts/start_wizard.py wizard
 
 `doctor` is read-only and checks the official CLI version plus authenticated-user access. The wizard guides the user through login, organization/team selection, scenario review, enhancement prompts, and local design handoff creation.
 
+For a single exact scenario ID without the interactive menu, use:
+
+```bash
+make-skills review 1905530 --json
+```
+
+It reads only the selected scenario and emits a minimized report. Add `--save` to create a private local report under `~/.make-com-skills/reviews/` by default (or pass `--reviews-dir`); it never edits, runs, or activates Make resources.
+
+## npm / npx bridge
+
+After the maintainer completes the one-time public npm publish, users can invoke the packaged bridge with:
+
+```bash
+npx --yes @markes76/make-com-skills@latest wizard
+```
+
+or install it globally:
+
+```bash
+npm install --global @markes76/make-com-skills
+make-com-skills notifications enable
+make-com-skills wizard
+```
+
+The bridge needs Node 18+ and Python 3, bundles this companion, and delegates Make API work to the official `make-cli`. Update checking is opt-in and notification-only; it never installs a package without an explicit user command. The exact publication and security setup is documented in [NPM release](NPM_RELEASE.md).
+
 | Target | User scope | Project scope |
 | --- | --- | --- |
 | Codex | `~/.codex/skills/make-automation-guru/` | `.codex/skills/make-automation-guru/` |

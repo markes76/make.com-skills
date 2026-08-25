@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "name": "Make official public-source metadata watchlist",
+  "purpose": "Detect candidate upstream documentation changes for human review without mirroring public pages or accessing a Make account.",
+  "allowed_hosts": [
+    "developers.make.com",
+    "apps.make.com",
+    "help.make.com"
+  ],
+  "collection_policy": {
+    "allowed_methods": [
+      "HEAD",
+      "GET metadata fallback"
+    ],
+    "stored_fields": [
+      "status_code",
+      "canonical final URL (scheme, host, and path only)",
+      "etag",
+      "last_modified",
+      "content_length",
+      "content_type"
+    ],
+    "never_collect": [
+      "response bodies or article text",
+      "cookies, authorization headers, or credentials",
+      "Make API tokens or MCP tokens",
+      "scenario identifiers, blueprints, executions, connections, or customer data"
+    ],
+    "review_gate": "A metadata signal is not a documentation claim. A maintainer must inspect the official page and review any proposed guidance change before it is merged."
+  },
+  "sources": [
+    {
+      "id": "developer-hub-root",
+      "url": "https://developers.make.com/",
+      "kind": "developer-hub-root"
+    },
+    {
+      "id": "official-cli-authentication",
+      "url": "https://developers.make.com/make-cli/make-cli/authenticate-the-make-cli",
+      "kind": "official-cli-guide"
+    },
+    {
+      "id": "official-cli-scenarios",
+      "url": "https://developers.make.com/make-cli/make-cli/make-cli-reference/scenarios",
+      "kind": "official-cli-reference"
+    },
+    {
+      "id": "mcp-server-root",
+      "url": "https://developers.make.com/mcp-server",
+      "kind": "mcp-guide"
+    },
+    {
+      "id": "apps-catalog-root",
+      "url": "https://apps.make.com/",
+      "kind": "apps-catalog-root"
+    },
+    {
+      "id": "http-app-reference",
+      "url": "https://apps.make.com/http",
+      "kind": "app-reference"
+    },
+    {
+      "id": "help-center-root",
+      "url": "https://help.make.com/",
+      "kind": "help-center-root"
+    },
+    {
+      "id": "help-scenarios",
+      "url": "https://help.make.com/scenarios",
+      "kind": "help-guide"
+    },
+    {
+      "id": "help-active-inactive-scenarios",
+      "url": "https://help.make.com/active-and-inactive-scenarios",
+      "kind": "lifecycle-guide"
+    }
+  ]
+}
