@@ -85,4 +85,8 @@ pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
 if 'make-skills = "make_skills.cli:main"' not in pyproject:
     fail("pyproject.toml must expose make-skills")
 
+package_version = (ROOT / "src/make_skills/__init__.py").read_text(encoding="utf-8")
+if f'__version__ = "{plugin["version"]}"' not in package_version:
+    fail("make_skills package version must match plugin.json")
+
 print("Project validation passed")
