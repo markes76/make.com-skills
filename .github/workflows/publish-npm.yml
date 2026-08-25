@@ -10,7 +10,7 @@ on:
         type: boolean
         default: false
       release_tag:
-        description: Exact existing release tag to publish, for example v0.4.0
+        description: Exact existing release tag to publish, for example v1.2.3
         type: string
         required: true
 
