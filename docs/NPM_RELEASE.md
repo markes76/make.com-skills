@@ -14,13 +14,14 @@ For a reusable global command:
 
 ```bash
 npm install --global @markesai/make-com-skills
+make-com-skills make-cli install
 make-com-skills wizard
 make-com-skills update
 ```
 
 `update` makes a read-only request to the npm registry, compares versions, and prints an install command only when a newer version exists. It never installs, updates, or runs a package by itself. Users can explicitly opt into a once-per-day notification on later `doctor` or `wizard` runs with `make-com-skills notifications enable`; disable it with `make-com-skills notifications disable`.
 
-`npx ...@latest` is the simplest choice for occasional use: it resolves the current `latest` release when invoked. The npx bridge needs Node 18+ and Python 3 because it bundles and launches the Python companion. It still requires the separately installed official Make CLI for authenticated Make reads.
+`npx ...@latest` is the simplest choice for occasional use: it resolves the current `latest` release when invoked. The npx bridge needs Node 18+ and Python 3 because it bundles and launches the Python companion. For a supported desktop platform, `make-com-skills make-cli install` explicitly displays and confirms the pinned official Make CLI release, verifies its SHA-256, and writes it to user-local storage. It does not run during npm install, alter `PATH`, or save credentials; the official CLI's own `login` flow remains responsible for authentication.
 
 ## What a release updates
 

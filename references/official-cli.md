@@ -4,7 +4,7 @@
 
 ## Install and authenticate
 
-Install Make's supported `make-cli` using the official instructions. Then use one of its approved authentication paths:
+Install Make's supported `make-cli` using the official instructions. npm/npx bridge users on a supported desktop platform may instead run `make-com-skills make-cli install`: it displays the exact official Make release, source URL, checksum, and user-local destination, then downloads only after confirmation. It verifies the archive checksum, does not change `PATH`, and does not run during `npm install`. Then use one of the official authentication paths:
 
 - `make-cli login` is the recommended interactive path and stores credentials in the official CLI configuration.
 - For a short-lived shell session, set `MAKE_API_KEY` using a hidden terminal prompt and set `MAKE_ZONE` to a hostname such as `eu1.make.com`.
@@ -26,7 +26,7 @@ The wizard checks the official binary, verifies authentication with a read-only 
 3. Generate conservative team-wide enhancement prompts from scenario metadata.
 4. Create a local design handoff for a new scenario, ready for MCP/live-schema work.
 
-If API authentication is missing, the wizard offers the official `make-cli login` flow, which guides the user through creating/connecting a Make API key. If the official binary is missing, it explains that prerequisite and exits without attempting an unsafe platform-specific installation.
+If API authentication is missing, the wizard offers the official `make-cli login` flow, which guides the user through creating/connecting a Make API key. If the official binary is missing, the npm bridge directs the user to its confirmation-gated `make-cli install` command; other distributions explain the prerequisite and exit without attempting an unsafe platform-specific installation.
 
 The wizard performs no Make write or activation in this version. Its local plan is deliberately an input to a skilled agent or a separately approved official `make-cli` command—not a guessed blueprint.
 

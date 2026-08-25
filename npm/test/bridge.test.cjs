@@ -24,7 +24,24 @@ const {
   pythonCandidates,
   readNotificationPreference,
   updateMessage,
+  withManagedMakeCli,
 } = require("../lib/bridge.cjs");
+const {
+  extractVerifiedBinary,
+  installOfficialCli,
+  managedCliPath,
+  selectOfficialCliArtifact,
+  sha256,
+} = require("../lib/official-cli-installer.cjs");
+
+function tarGzipEntry(name, data) {
+  const header = Buffer.alloc(512);
+  header.write(name, 0, "utf8");
+  header.write(`${data.length.toString(8).padStart(11, "0")}\0`, 124, "utf8");
+  header[156] = "0".charCodeAt(0);
+  const padding = Buffer.alloc((512 - (data.length % 512)) % 512);
+  return require("node:zlib").gzipSync(Buffer.concat([header, data, padding, Buffer.alloc(1024)]));
+}
 
 test("detectPython prefers an explicit Python 3 interpreter", () => {
   const calls = [];
@@ -107,9 +124,69 @@ test("command routing supports only safe bridge actions", () => {
     forwardedArgs: ["review", "1905530", "--json"],
   });
   assert.deepEqual(commandFromArguments(["notifications", "enable"]), { type: "notifications", action: "enable" });
+  assert.deepEqual(commandFromArguments(["make-cli", "status"]), { type: "make-cli", action: "status", assumeYes: false });
+  assert.deepEqual(commandFromArguments(["make-cli", "install", "--yes"]), { type: "make-cli", action: "install", assumeYes: true });
   assert.throws(() => commandFromArguments(["update", "--yes"]), /does not accept/);
   assert.throws(() => commandFromArguments(["notifications", "maybe"]), /notifications/);
+  assert.throws(() => commandFromArguments(["make-cli", "install", "--force"]), /make-cli/);
   assert.throws(() => commandFromArguments(["publish"]), /Unsupported command/);
+});
+
+test("the official CLI installer selects only supported verified artifacts", () => {
+  const artifact = selectOfficialCliArtifact({ platform: "darwin", architecture: "arm64" });
+  assert.equal(artifact.asset, "make-cli-darwin-arm64.tar.gz");
+  assert.equal(artifact.binary, "make-cli-darwin-arm64");
+  assert.match(artifact.sha256, /^[a-f0-9]{64}$/);
+  assert.throws(() => selectOfficialCliArtifact({ platform: "freebsd", architecture: "x64" }), /No verified official Make CLI installer/);
+});
+
+test("the official CLI installer verifies archive bytes and extracts only the expected file", async (t) => {
+  const data = Buffer.from("verified executable bytes");
+  const archive = tarGzipEntry("make-cli-darwin-arm64", data);
+  const artifact = {
+    key: "darwin-arm64",
+    version: "test",
+    url: "https://github.com/integromat/make-cli/releases/download/vtest/make-cli-darwin-arm64.tar.gz",
+    binary: "make-cli-darwin-arm64",
+    sha256: sha256(archive),
+  };
+  assert.deepEqual(extractVerifiedBinary(archive, artifact), data);
+  assert.throws(() => extractVerifiedBinary(tarGzipEntry("nested/make-cli-darwin-arm64", data), artifact), /exactly the expected executable/);
+
+  let downloadWasCalled = false;
+  const cancelled = await installOfficialCli({
+    artifact,
+    destination: path.join(os.tmpdir(), "make-com-skills-installer-cancelled", artifact.binary),
+    confirm: async () => false,
+    download: async () => {
+      downloadWasCalled = true;
+      return archive;
+    },
+  });
+  assert.equal(cancelled.status, "cancelled");
+  assert.equal(downloadWasCalled, false, "a declined installation must not download anything");
+
+  const tools = fs.mkdtempSync(path.join(os.tmpdir(), "make-com-skills-official-cli-"));
+  t.after(() => fs.rmSync(tools, { recursive: true, force: true }));
+  const destination = path.join(tools, "vtest", artifact.binary);
+  const result = await installOfficialCli({ artifact, destination, confirm: async () => true, download: async () => archive });
+  assert.equal(result.status, "installed");
+  assert.deepEqual(fs.readFileSync(destination), data);
+  assert.equal((fs.statSync(destination).mode & 0o777), 0o700);
+  const alreadyInstalled = await installOfficialCli({ artifact, destination, confirm: async () => true, download: async () => archive });
+  assert.equal(alreadyInstalled.status, "already-installed");
+});
+
+test("a verified managed binary is used only when no explicit CLI override exists", (t) => {
+  const homeDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "make-com-skills-managed-cli-"));
+  t.after(() => fs.rmSync(homeDirectory, { recursive: true, force: true }));
+  const options = { env: {}, platform: "darwin", architecture: "arm64", homeDirectory };
+  const destination = managedCliPath(options);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.writeFileSync(destination, "binary");
+  assert.deepEqual(withManagedMakeCli(["doctor"], options), ["--make-cli", destination, "doctor"]);
+  assert.deepEqual(withManagedMakeCli(["--make-cli", "/custom/make-cli", "doctor"], options), ["--make-cli", "/custom/make-cli", "doctor"]);
+  assert.deepEqual(withManagedMakeCli(["doctor"], { ...options, env: { MAKE_SKILLS_MAKE_CLI: "/custom/make-cli" } }), ["doctor"]);
 });
 
 test("update messaging is opt-in and never claims an install occurred", () => {

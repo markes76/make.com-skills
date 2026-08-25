@@ -5,6 +5,10 @@ const fs = require("node:fs");
 const https = require("node:https");
 const os = require("node:os");
 const path = require("node:path");
+const {
+  installOfficialCli,
+  managedCliStatus,
+} = require("./official-cli-installer.cjs");
 
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
 const SUPPORTED_COMMANDS = new Set(["doctor", "wizard", "review", "update", "notifications"]);
@@ -355,6 +359,18 @@ function commandFromArguments(argv) {
     }
     return { type: "help" };
   }
+  if (args[0] === "make-cli") {
+    if (globalArgs.length || !["status", "install"].includes(args[1])) {
+      throw new Error("Usage: make-com-skills make-cli <status|install> [--yes]");
+    }
+    if (args[1] === "status" && args.length === 2) {
+      return { type: "make-cli", action: "status", assumeYes: false };
+    }
+    if (args[1] === "install" && (args.length === 2 || (args.length === 3 && args[2] === "--yes"))) {
+      return { type: "make-cli", action: "install", assumeYes: args[2] === "--yes" };
+    }
+    throw new Error("Usage: make-com-skills make-cli <status|install> [--yes]");
+  }
   if (!SUPPORTED_COMMANDS.has(args[0])) {
     throw new Error(`Unsupported command: ${args[0]}`);
   }
@@ -375,12 +391,13 @@ function commandFromArguments(argv) {
 
 function usage() {
   return [
-    "Usage: make-com-skills [--version|doctor|wizard|review|update] [command options]",
+    "Usage: make-com-skills [--version|doctor|wizard|review|make-cli|update] [command options]",
     "",
     "Commands:",
     "  doctor   Verify a bundled Python 3 companion and the official Make CLI (read-only).",
     "  wizard   Start the read-first Make Skills wizard (default).",
     "  review <scenario-id>  Create a read-only derived review (supports --json).",
+    "  make-cli <status|install>  Inspect or explicitly install a checksum-verified official Make CLI.",
     "  update   Check the npm registry and print an opt-in update command; never installs anything.",
     "  notifications <enable|disable|status>  Manage opt-in 24-hour update notices for doctor/wizard.",
     "",
@@ -388,6 +405,59 @@ function usage() {
     "Official Make CLI selection: pass --make-cli PATH or set MAKE_SKILLS_MAKE_CLI.",
     "Unofficial community companion: review every command before approving any third-party effect.",
   ].join("\n");
+}
+
+function withManagedMakeCli(forwardedArgs, options = {}) {
+  const { globalArgs } = extractMakeCliArguments(forwardedArgs);
+  const env = options.env || process.env;
+  if (globalArgs.length || env.MAKE_SKILLS_MAKE_CLI) {
+    return forwardedArgs;
+  }
+  try {
+    const status = managedCliStatus({ env, platform: options.platform, architecture: options.architecture, homeDirectory: options.homeDirectory });
+    return status.installed ? ["--make-cli", status.destination, ...forwardedArgs] : forwardedArgs;
+  } catch (_error) {
+    return forwardedArgs;
+  }
+}
+
+async function manageOfficialCli(command, options = {}) {
+  const write = options.write || console.log;
+  const installerOptions = {
+    env: options.env || process.env,
+    platform: options.platform,
+    architecture: options.architecture,
+    homeDirectory: options.homeDirectory,
+    assumeYes: command.assumeYes,
+    confirm: options.confirmInstall,
+    download: options.downloadOfficialCli,
+  };
+  if (command.action === "status") {
+    const status = managedCliStatus(installerOptions);
+    write(
+      status.installed
+        ? `Managed official Make CLI is installed: ${status.destination}`
+        : `Managed official Make CLI is not installed. Run \`make-com-skills make-cli install\` to review and install Make CLI v${status.artifact.version}.`,
+    );
+    return 0;
+  }
+  try {
+    const result = await installOfficialCli(installerOptions);
+    if (result.status === "cancelled") {
+      write("No download or installation was performed.");
+      return 0;
+    }
+    if (result.status === "already-installed") {
+      write(`Managed official Make CLI is already installed: ${result.destination}`);
+    } else {
+      write(`Installed official Make CLI v${result.artifact.version}: ${result.destination}`);
+    }
+    write("Next: run `make-com-skills doctor`, then use the official Make CLI login flow if authentication is not configured.");
+    return 0;
+  } catch (error) {
+    console.error(`Could not install the official Make CLI: ${error.message}`);
+    return 1;
+  }
 }
 
 function fetchLatestFromRegistry(packageName, options = {}) {
@@ -583,6 +653,9 @@ async function main(argv = process.argv.slice(2), options = {}) {
   if (command.type === "notifications") {
     return manageNotifications(command.action, options);
   }
+  if (command.type === "make-cli") {
+    return manageOfficialCli(command, options);
+  }
   if (!hasBundledPython(packageRoot)) {
     console.error("The bundled Python companion is missing. Install a released package, or run `npm run bundle-python` from a repository checkout before using this development wrapper.");
     return 2;
@@ -602,7 +675,7 @@ async function main(argv = process.argv.slice(2), options = {}) {
       notice: options.notice,
     });
   }
-  return runPython(python, command.forwardedArgs, { packageRoot, env: options.env || process.env, cwd: options.cwd });
+  return runPython(python, withManagedMakeCli(command.forwardedArgs, options), { packageRoot, env: options.env || process.env, cwd: options.cwd });
 }
 
 module.exports = {
@@ -621,6 +694,7 @@ module.exports = {
   isNotificationCheckDue,
   isNotificationEligibleCommand,
   main,
+  manageOfficialCli,
   manageNotifications,
   markNotificationChecked,
   maybeShowUpdateNotification,
@@ -633,6 +707,7 @@ module.exports = {
   probePython,
   pythonCandidates,
   runPython,
+  withManagedMakeCli,
   updateMessage,
   usage,
   readNotificationPreference,

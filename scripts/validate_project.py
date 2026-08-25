@@ -60,6 +60,7 @@ REQUIRED = (
     "npm/package.json",
     "npm/bin/make-com-skills.js",
     "npm/lib/bridge.cjs",
+    "npm/lib/official-cli-installer.cjs",
     "npm/scripts/bundle-python.cjs",
     "npm/test/bridge.test.cjs",
     "npm/NOTICE.md",

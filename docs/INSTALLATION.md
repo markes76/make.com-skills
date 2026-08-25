@@ -54,11 +54,13 @@ or install it globally:
 
 ```bash
 npm install --global @markesai/make-com-skills
+make-com-skills make-cli install
+make-com-skills doctor
 make-com-skills notifications enable
 make-com-skills wizard
 ```
 
-The bridge needs Node 18+ and Python 3, bundles this companion, and delegates Make API work to the official `make-cli`. Update checking is opt-in and notification-only; it never installs a package without an explicit user command. The exact publication and security setup is documented in [NPM release](NPM_RELEASE.md).
+The bridge needs Node 18+ and Python 3, bundles this companion, and delegates Make API work to the official `make-cli`. `make-cli install` is an explicit, confirmation-gated download from Make's official GitHub release and verifies a pinned SHA-256 before writing only to the user-local tools directory. npm installation itself never downloads the official CLI, changes `PATH`, or saves credentials. Update checking is opt-in and notification-only; it never installs a package without an explicit user command. The exact publication and security setup is documented in [NPM release](NPM_RELEASE.md).
 
 | Target | User scope | Project scope |
 | --- | --- | --- |

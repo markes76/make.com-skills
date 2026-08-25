@@ -96,11 +96,12 @@ or install it globally and opt into update notices:
 
 ```bash
 npm install --global @markesai/make-com-skills
+make-com-skills make-cli install
 make-com-skills notifications enable
 make-com-skills wizard
 ```
 
-The bridge detects Python 3, launches the bundled companion, and still uses the separately installed official Make CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing; until the initial publish completes, use the GitHub clone/Python path above.
+The bridge detects Python 3 and launches the bundled companion. `make-cli install` is a separate, confirmed action that downloads a pinned Make release from Make's official GitHub source, verifies its SHA-256, and installs it only in the user's local tools directory; npm installation itself never downloads the official CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing; until the initial publish completes, use the GitHub clone/Python path above.
 
 ## Install / use
 

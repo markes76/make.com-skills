@@ -4,7 +4,7 @@ This directory contains a zero-runtime-dependency Node bridge for the Make.com S
 
 > **Unofficial community companion · use at your own risk.** This is not an official Make.com package or the official `make-cli`. Review every proposed command and third-party side effect. See [NOTICE.md](NOTICE.md).
 
-The bridge does not implement Make API operations itself. It discovers Python 3, adds the bundled `python/` directory to `PYTHONPATH`, and invokes `python -m make_skills`. The Python companion continues to use the official Make CLI for API access and retains its read-first, approval-gated behavior.
+The bridge does not implement Make API operations itself. It discovers Python 3, adds the bundled `python/` directory to `PYTHONPATH`, and invokes `python -m make_skills`. The Python companion continues to use the official Make CLI for API access and retains its read-first, approval-gated behavior. On supported desktop platforms, the optional `make-cli install` command can fetch a pinned official Make release only after the user reviews and confirms its source, SHA-256, and local destination.
 
 ## Local development
 
@@ -16,6 +16,8 @@ node bin/make-com-skills.js --version
 node bin/make-com-skills.js doctor --make-cli /absolute/path/to/make-cli
 node bin/make-com-skills.js wizard --make-cli /absolute/path/to/make-cli
 node bin/make-com-skills.js review 1905530 --json --make-cli /absolute/path/to/make-cli
+node bin/make-com-skills.js make-cli status
+node bin/make-com-skills.js make-cli install
 node bin/make-com-skills.js update
 node bin/make-com-skills.js notifications enable
 npm test
@@ -23,7 +25,7 @@ npm test
 
 `npm install ./npm` also runs the local `prepare` hook, which creates the generated `python/make_skills` bundle. The generated bundle is deliberately ignored by Git; `npm pack` runs the same bundle step before it creates a tarball.
 
-The bridge checks `MAKE_SKILLS_PYTHON` first, then checks `python3`, `python`, and the system Python on macOS/Linux; Windows checks `py -3`, then `python3` and `python`. Set `MAKE_SKILLS_MAKE_CLI` or pass `--make-cli` to select the official Make CLI.
+The bridge checks `MAKE_SKILLS_PYTHON` first, then checks `python3`, `python`, and the system Python on macOS/Linux; Windows checks `py -3`, then `python3` and `python`. Set `MAKE_SKILLS_MAKE_CLI` or pass `--make-cli` to select the official Make CLI. A CLI installed through `make-cli install` is discovered automatically by this npm bridge; it is stored outside the package and never added to `PATH`.
 
 ## Commands and update behavior
 
@@ -33,12 +35,13 @@ Once a public release exists, the intended end-user entry points are:
 npx --yes @markesai/make-com-skills@latest wizard
 npx --yes @markesai/make-com-skills@latest doctor
 npx --yes @markesai/make-com-skills@latest review 1905530 --json
+npx --yes @markesai/make-com-skills@latest make-cli install
 npx --yes @markesai/make-com-skills@latest update
 npx --yes @markesai/make-com-skills@latest notifications enable
 make-skills-npx wizard
 ```
 
-Running no command starts `wizard`. `update` makes one HTTPS request to the npm registry, displays a version comparison and prints optional install commands. It never runs `npm install`, modifies a package, changes Make resources, or sends scenario data to npm.
+Running no command starts `wizard`. `update` makes one HTTPS request to the npm registry, displays a version comparison and prints optional install commands. `make-cli install` is the only command that downloads the official CLI: it displays a pinned version, official GitHub source, SHA-256, and local destination, then requires confirmation (or explicit `--yes` in an already-reviewed non-interactive use). No package postinstall hook downloads Make CLI, changes `PATH`, modifies Make resources, or sends scenario data to npm.
 
 ### Opt-in update notifications
 

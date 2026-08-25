@@ -32,7 +32,8 @@ def locate(executable: str | None = None) -> str:
     if not candidate:
         raise OfficialCliError(
             "Official make-cli was not found. Install it from the Make CLI documentation "
-            "or set MAKE_SKILLS_MAKE_CLI to its executable path."
+            "or set MAKE_SKILLS_MAKE_CLI to its executable path. npm bridge users can run "
+            "`make-com-skills make-cli install` to install Make's verified official release."
         )
     path = Path(candidate).expanduser()
     if path.parent != Path(".") and not path.is_file():
