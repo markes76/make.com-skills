@@ -9,7 +9,7 @@ from pathlib import Path
 
 from make_skills.cli import doctor
 from make_skills.official_cli import run_json
-from make_skills.wizard import write_design_handoff
+from make_skills.wizard import build_scenario_review, choose, write_design_handoff
 
 
 class OfficialCliBridgeTests(unittest.TestCase):
@@ -53,6 +53,27 @@ class OfficialCliBridgeTests(unittest.TestCase):
         self.assertEqual(payload["status"], "design-only")
         self.assertIn("not authorization", payload["safety_note"])
         self.assertNotIn("--api-key", json.dumps(payload))
+
+    def test_scenario_review_derives_findings_without_raw_blueprint(self) -> None:
+        review = build_scenario_review(
+            {
+                "scenario": {
+                    "id": 99,
+                    "name": "Inbound orders",
+                    "active": False,
+                    "blueprint": json.dumps({"flow": [{"module": "webhooks-customWebhook"}, {"module": "http-makeRequest"}]}),
+                }
+            }
+        )
+        self.assertEqual(review["scenario_id"], 99)
+        self.assertEqual(review["module_count"], 2)
+        self.assertIn("webhooks-customWebhook", review["module_references"])
+        self.assertNotIn("blueprint", review)
+        self.assertTrue(any("webhook" in item.casefold() for item in review["recommendations"]))
+
+    def test_scenario_selector_accepts_an_id(self) -> None:
+        selected = choose([{"id": 1905530, "name": "Error to email"}], "scenario", lambda _: "1905530", lambda _: None, allow_id=True)
+        self.assertEqual(selected["name"], "Error to email")
 
 
 if __name__ == "__main__":

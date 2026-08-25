@@ -34,12 +34,13 @@ def main(argv: list[str] | None = None) -> None:
     doctor_parser.add_argument("--json", action="store_true", help="Emit machine-readable status")
     wizard_parser = commands.add_parser("wizard", help="Start a read-first scenario review and planning wizard")
     wizard_parser.add_argument("--plans-dir", type=Path, default=Path("make-skills-plans"))
+    wizard_parser.add_argument("--reviews-dir", type=Path, default=Path("make-skills-reviews"))
     args = parser.parse_args(argv)
     try:
         if args.command == "doctor":
             raise SystemExit(doctor(args.make_cli, args.json))
         if args.command == "wizard":
-            run_wizard(args.make_cli, args.plans_dir)
+            run_wizard(args.make_cli, args.plans_dir, args.reviews_dir)
     except OfficialCliError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         raise SystemExit(2) from exc

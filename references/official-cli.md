@@ -20,9 +20,11 @@ make-skills wizard
 
 The wizard checks the official binary, verifies authentication with a read-only user request, selects an organization and team, then offers:
 
-1. Review the selected team's scenarios.
+1. List the selected team's scenarios, choose one by displayed number or scenario ID, retrieve its current detail, and save a derived review report.
 2. Generate conservative enhancement review prompts from scenario metadata.
 3. Create a local design handoff for a new scenario, ready for MCP/live-schema work.
+
+If API authentication is missing, the wizard offers the official `make-cli login` flow, which guides the user through creating/connecting a Make API key. If the official binary is missing, it explains that prerequisite and exits without attempting an unsafe platform-specific installation.
 
 The wizard performs no Make write or activation in this version. Its local plan is deliberately an input to a skilled agent or a separately approved official `make-cli` command—not a guessed blueprint.
 

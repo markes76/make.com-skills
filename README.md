@@ -53,7 +53,7 @@ If the official binary is not on `PATH`, provide its location without copying it
 make-skills --make-cli /path/to/make-cli wizard
 ```
 
-The wizard invokes the official CLI's own login flow when needed, then starts read-only. It can review scenarios and generate a local design handoff, but it never creates or activates a Make scenario from a vague request.
+The wizard invokes the official CLI's own login flow when needed, then starts read-only. Scenario review asks for the displayed number or exact scenario ID, retrieves that one scenario, and saves a derived report without storing its raw blueprint. It can also generate a local design handoff, but it never creates or activates a Make scenario from a vague request.
 
 ## Install / use
 
