@@ -14,6 +14,8 @@
 
 An open, portable Make.com skill pack for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. Its canonical router is `make-automation-guru`; it supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
 
+Current release: [`v0.7.1`](https://github.com/markes76/make.com-skills/releases/tag/v0.7.1) / [`@markesai/make-com-skills@0.7.1`](https://www.npmjs.com/package/@markesai/make-com-skills).
+
 It is an AI instruction package with a terminal companion—not a replacement for Make authorization, module schemas, connections, or user approval. The official [`make-cli`](https://github.com/integromat/make-cli) remains the API runtime; this repository adds AI-led guidance, review, planning, and governed learning on top.
 
 > Community notice: this is independent community software, not an official Make.com package or a replacement for the official CLI. Review every plan and command before approving it; no automation outcome is guaranteed. See [COMMUNITY_NOTICE.md](COMMUNITY_NOTICE.md).
@@ -28,6 +30,7 @@ It is an AI instruction package with a terminal companion—not a replacement fo
 
 - Schema-first Make MCP workflows: discover the exact app/module and inspect its fields before building.
 - Production automation architecture: webhooks, schedules, routing, arrays, idempotency, state, retries, rate limits, error recovery, and observability.
+- Pagination design and review: total/page, offset, token, next-URL, and empty-page contracts; bounded execution, duplicate/gap checks, and safe iterator/aggregator boundaries.
 - Safe scenario lifecycle guidance: create inactive, test with controlled input, inspect executions, then activate only on request.
 - Explicit custom-app and API/CLI boundaries, so agents do not pretend an MCP scenario tool can publish a Make app.
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
@@ -35,7 +38,7 @@ It is an AI instruction package with a terminal companion—not a replacement fo
 - Evaluation scenarios, MCP capability-log discipline, and a reproducible release builder so the guidance can mature without turning anecdotes into facts.
 - An AI-first engagement protocol: when a scenario is mentioned, the agent performs live due diligence, distinguishes evidence from hypotheses, then leads review, fix, build, troubleshooting, or documentation work.
 - `make-skills`, an installable companion for the official CLI: secure authentication, minimized read-only evidence, and explicitly consented private-learning storage.
-- A versioned npm/npx bridge that installs the portable AI skill for Codex, Claude, Cursor, Gemini, or OpenClaw, then offers opt-in update notification and protected trusted publishing.
+- A versioned npm/npx bridge that installs the portable AI skill for Codex, Claude Code, Cursor, Gemini CLI, GitHub Copilot, OpenClaw, and agents that support `AGENTS.md`, then offers opt-in update notification and protected trusted publishing.
 
 ## Install the AI skill
 
@@ -46,7 +49,7 @@ npm install --global @markesai/make-com-skills
 make-com-skills skill install --target codex
 ```
 
-Choose `--target claude`, `cursor`, `gemini`, `openclaw`, or `agents` as appropriate. Cursor/Gemini/agents installs are project-scoped, so provide `--project /path/to/project` when you are not already in that project. Restart/open the target AI client and ask it to review, troubleshoot, build, or document a Make automation. It will ask the relevant questions and do the due diligence in the conversation.
+Choose `--target claude`, `cursor`, `gemini`, `copilot`, `openclaw`, or `agents` as appropriate. Cursor, Gemini, Copilot, and generic-agent installs are project-scoped, so provide `--project /path/to/project` when you are not already in that project. Restart/open the target AI client and ask it to review, troubleshoot, build, or document a Make automation. It will ask the relevant questions and do the due diligence in the conversation.
 
 ### Terminal companion prerequisites
 
@@ -95,9 +98,9 @@ make-skills review 1905530 --json
 
 Add `--save` only if the minimized local report should be written to the private default `~/.make-com-skills/reviews/` (or to an explicitly selected `--reviews-dir`).
 
-### Run with npx (after the first public npm release)
+### Run with npx
 
-The public npm package is configured as `@markesai/make-com-skills`. Once the maintainer has completed the initial npm trusted-publisher setup, users can run:
+The public npm package is `@markesai/make-com-skills`. Run it without a global installation:
 
 ```bash
 npx --yes @markesai/make-com-skills@latest skill install --target codex
@@ -112,7 +115,7 @@ make-com-skills skill install --target codex
 make-com-skills notifications enable
 ```
 
-The bridge packages the AI skill and only launches the bundled Python companion for `doctor`, read-only `review`, legacy `wizard`, or explicit `learn` storage. `make-cli install` is a separate, confirmed action that downloads a pinned Make release from Make's official GitHub source, verifies its SHA-256, and installs it only in the user's local tools directory; npm installation itself never downloads the official CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing; until the initial publish completes, use the GitHub clone/Python path above.
+The bridge packages the AI skill and only launches the bundled Python companion for `doctor`, read-only `review`, legacy `wizard`, or explicit `learn` storage. `make-cli install` is a separate, confirmed action that downloads a pinned Make release from Make's official GitHub source, verifies its SHA-256, and installs it only in the user's local tools directory; npm installation itself never downloads the official CLI. It never installs an update automatically. See the [npm release and update model](docs/NPM_RELEASE.md) before publishing.
 
 ## Install / use
 
@@ -124,9 +127,12 @@ Clone this repository, then choose the adapter for your tool.
 | Claude Code | Run `python3 scripts/install.py --target claude --scope project --apply`, or work directly from this repository. |
 | Cursor | Run `python3 scripts/install.py --target cursor --scope project --apply`. |
 | Gemini CLI | Run `python3 scripts/install.py --target gemini --scope project --apply`. |
-| OpenClaw / other agent CLIs | Run `python3 scripts/install.py --target openclaw --scope project --apply`, or copy `AGENTS.md`, `SKILL.md`, and `references/`. |
+| GitHub Copilot | Run `python3 scripts/install.py --target copilot --scope project --apply`. It adds a project `AGENTS.md` and `.github/copilot-instructions.md` adapter. |
+| OpenClaw | Run `python3 scripts/install.py --target openclaw --scope project --apply`. |
+| Other coding agents | Run `python3 scripts/install.py --target agents --scope project --apply`. It adds `AGENTS.md` pointing at the portable bundle; verify that the client recognizes `AGENTS.md`/Skill files before relying on it. |
+| ChatGPT | A hosted ChatGPT conversation cannot load a local npm skill automatically. Use the Make ChatGPT app/MCP when available, or provide this repository's `SKILL.md` and references as conversation context. |
 
-Install is dry-run by default, copies rather than symlinks, and refuses to overwrite files unless `--force` is supplied. The Cursor, Claude Code, and Gemini adapters follow their current project-instruction conventions: [Cursor Rules](https://docs.cursor.com/context/rules), [Claude Code memory](https://docs.anthropic.com/en/docs/claude-code/memory), and [Gemini CLI context files](https://geminicli.com/docs/cli/gemini-md/).
+Install is dry-run by default, copies rather than symlinks, and refuses to overwrite files unless `--force` is supplied. The adapters follow their documented project-instruction conventions: [Cursor Rules](https://docs.cursor.com/context/rules), [Claude Code memory](https://code.claude.com/docs/en/memory), [Gemini CLI context files](https://geminicli.com/docs/cli/gemini-md/), and [GitHub Copilot custom instructions](https://docs.github.com/en/copilot/reference/custom-instructions-support).
 
 ## Start an automation
 

@@ -1,6 +1,6 @@
 # Make.com Skills npm bridge
 
-This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills AI skill and Python companion. Its intended public package name is `@markesai/make-com-skills`. A package configuration in Git is not itself a publication: check the npm registry before telling users that a release exists.
+This directory contains a zero-runtime-dependency Node bridge for the Make.com Skills AI skill and Python companion. Its public package name is `@markesai/make-com-skills`; check the npm registry before telling users that a new release exists.
 
 > **Unofficial community companion · use at your own risk.** This is not an official Make.com package or the official `make-cli`. Review every proposed command and third-party side effect. See [NOTICE.md](NOTICE.md).
 
@@ -30,7 +30,7 @@ The bridge checks `MAKE_SKILLS_PYTHON` first, then checks `python3`, `python`, a
 
 ## Commands and update behavior
 
-Once a public release exists, the intended end-user entry points are:
+The end-user entry points are:
 
 ```sh
 npx --yes @markesai/make-com-skills@latest skill install --target codex
@@ -58,9 +58,9 @@ make-com-skills notifications disable
 
 After a user enables notifications, `doctor` and `wizard` make at most one registry check every 24 hours. If a newer package exists, the bridge writes a notice to stderr (so `doctor --json` remains valid) with one explicit `npm install --global ...` command. It never installs, downloads, or changes a Make resource automatically. Failed or unavailable registry checks are silent and do not block the command.
 
-## Required release work before publishing
+## Release work
 
-Before users can run the public npx command, maintainers need to:
+Before publishing a new version, maintainers need to:
 
 1. Confirm that `npm whoami` reports the publishing account as `markesai`. A registry `404` does not reserve the name.
 2. Complete the one-time trusted-publisher configuration described in [`../docs/NPM_RELEASE.md`](../docs/NPM_RELEASE.md), including the protected `npm-publish` GitHub environment.

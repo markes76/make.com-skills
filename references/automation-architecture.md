@@ -13,8 +13,8 @@ Write the contract at each boundary: one bundle or many, required fields, option
 - Use an iterator when every array item must run independently through later modules.
 - Use an aggregator when a later module needs one combined payload. Specify the grouping key and expected aggregate size.
 - Use a filter for a one-way guard, an if/else plus merge when processing must converge, and a router when routes have intentionally different side effects or ownership.
-- Make pagination explicit for list/search APIs; do not assume a single page represents the complete result.
-- Choose the pagination mechanism from the API contract: use a bounded repeater only when a safe count/upper bound is known; use the HTTP module’s native mode or a custom-app pagination block for response-driven next URL/token/empty-page termination. A repeater does not itself advance an opaque token or next URL.
+- Make pagination explicit for list/search APIs; do not assume a single page represents the complete result. Follow the [pagination patterns](pagination.md) checklist before choosing a module.
+- Choose the pagination mechanism from the API contract: use a bounded repeater only when a safe count/upper bound is known; use the HTTP module’s native mode or a custom-app pagination block for response-driven next URL/token/empty-page termination. A repeater does not itself advance an opaque token or next URL. Verify the first response, page index base, stable sorting, upper bound, and duplicate/gap behavior with a controlled test.
 - Use module outputs only after `make_module_spec` or a test run shows the actual shape.
 
 ## Make side effects idempotent

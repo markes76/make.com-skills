@@ -28,6 +28,7 @@ const {
 } = require("../lib/bridge.cjs");
 const {
   installSkill,
+  installationPaths,
   parseSkillArguments,
 } = require("../lib/skill-installer.cjs");
 const {
@@ -156,6 +157,24 @@ test("AI skill installer copies only the packaged public skill after an explicit
   assert.equal(fs.existsSync(path.join(destination, "references", "ai-engagement.md")), true);
   assert.match(messages.join("\n"), /AI-first/);
   assert.throws(() => installSkill(command, { packageRoot, homeDirectory: path.join(temporary, "home") }), /Refusing to overwrite/);
+});
+
+test("generic and Copilot targets install a portable AGENTS adapter", (t) => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), "make-com-skills-agents-"));
+  t.after(() => fs.rmSync(temporary, { recursive: true, force: true }));
+  const packageRoot = path.join(temporary, "package");
+  const template = path.join(packageRoot, "skill");
+  fs.mkdirSync(template, { recursive: true });
+  fs.writeFileSync(path.join(template, "SKILL.md"), "---\nname: make-automation-guru\ndescription: Test skill\n---\n");
+  const project = path.join(temporary, "project");
+  const agents = parseSkillArguments(["skill", "install", "--target", "agents", "--project", project]);
+  assert.equal(installSkill(agents, { packageRoot, homeDirectory: path.join(temporary, "home"), write: () => {} }), 0);
+  assert.match(fs.readFileSync(path.join(project, "AGENTS.md"), "utf8"), /\.agents\/skills\/make-automation-guru\/SKILL\.md/);
+  const copilotProject = path.join(temporary, "copilot-project");
+  const copilot = parseSkillArguments(["skill", "install", "--target", "copilot", "--project", copilotProject]);
+  assert.equal(installSkill(copilot, { packageRoot, homeDirectory: path.join(temporary, "home"), write: () => {} }), 0);
+  assert.equal(fs.existsSync(path.join(copilotProject, ".github", "copilot-instructions.md")), true);
+  assert.equal(installationPaths(copilot).adapters.length, 2);
 });
 
 test("the official CLI installer selects only supported verified artifacts", () => {

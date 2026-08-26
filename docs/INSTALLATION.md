@@ -24,7 +24,7 @@ npm install --global @markesai/make-com-skills
 make-com-skills skill install --target codex
 ```
 
-Replace `codex` with `claude`, `cursor`, `gemini`, `openclaw`, or `agents`. Cursor, Gemini, and generic agents use project scope; pass `--project /path/to/project` when needed. The command refuses to overwrite an existing skill or adapter unless `--force` is explicit.
+Replace `codex` with `claude`, `cursor`, `gemini`, `copilot`, `openclaw`, or `agents`. Cursor, Gemini, Copilot, and generic agents use project scope; pass `--project /path/to/project` when needed. The command refuses to overwrite an existing skill or adapter unless `--force` is explicit.
 
 Restart/open the AI client and ask it to review a named scenario, troubleshoot an error, build a new flow, or document an automation. It should load `SKILL.md` and lead the work in conversation.
 
@@ -34,7 +34,6 @@ Restart/open the AI client and ask it to review a named scenario, troubleshoot a
 
 ```bash
 python3 -m pip install --user "git+https://github.com/markes76/make.com-skills.git"
-make-skills doctor
 make-skills doctor
 ```
 
@@ -59,7 +58,7 @@ It reads only the selected scenario and emits a minimized report. Add `--save` t
 
 ## npm / npx bridge
 
-After the maintainer completes the one-time public npm publish, users can invoke the packaged bridge with:
+Users can invoke the published bridge with:
 
 ```bash
 npx --yes @markesai/make-com-skills@latest skill install --target codex
@@ -82,6 +81,8 @@ The bridge needs Node 18+ and bundles the AI skill plus its Python companion. Th
 | Codex | `~/.codex/skills/make-automation-guru/` | `.codex/skills/make-automation-guru/` |
 | Claude Code | `~/.claude/skills/make-automation-guru/` | `.claude/skills/make-automation-guru/` |
 | Cursor | Not installed globally | `.agents/skills/make-automation-guru/` plus a thin `.cursor/rules/` adapter |
+| GitHub Copilot | Not installed globally | `.agents/skills/make-automation-guru/`, `AGENTS.md`, and `.github/copilot-instructions.md` adapters |
+| Generic agent | Not installed globally | `.agents/skills/make-automation-guru/` plus a thin root `AGENTS.md` adapter |
 | Gemini CLI | Not installed globally | `.agents/skills/make-automation-guru/` plus a root `GEMINI.md` import adapter |
 | OpenClaw | `~/.openclaw/skills/make-automation-guru/` | `.agents/skills/make-automation-guru/` |
 

@@ -33,6 +33,7 @@ The `make-com-skills` terminal package is a companion, not the intelligence laye
 | --- | --- |
 | Discover, create, patch, run, inspect, or debug a scenario | [MCP operations](references/mcp-operations.md) |
 | Design webhooks, schedules, mappings, state, retries, or observability | [Automation architecture](references/automation-architecture.md) |
+| Retrieve every page from an API, debug duplicates/gaps, or design pagination | [Pagination patterns](references/pagination.md) |
 | Transform fields, arrays, bundles, functions, or variables | [Mapping and data](references/mapping-and-data.md) |
 | Diagnose a known failure signal | [Error playbook](references/error-playbook.md) |
 | Build a Make AI agent or expose tools to one | [AI agent guidance](references/ai-agents.md) |

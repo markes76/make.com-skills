@@ -52,6 +52,14 @@ def gemini_context() -> str:
     return f"@.agents/skills/{PACKAGE_NAME}/SKILL.md\n"
 
 
+def agents_context() -> str:
+    return f"# Make Automation Guru\n\n@.agents/skills/{PACKAGE_NAME}/SKILL.md\n"
+
+
+def copilot_context() -> str:
+    return "# Make Automation Guru\n\n@../AGENTS.md\n"
+
+
 def copy_bundle(destination: Path, apply: bool, force: bool) -> None:
     source_symlink = next((path for path in ROOT.rglob("*") if path.is_symlink()), None)
     if source_symlink:
@@ -78,18 +86,18 @@ def write_file(path: Path, content: str, apply: bool, force: bool) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target", choices=("codex", "claude", "cursor", "gemini", "openclaw", "agents"), required=True)
+    parser.add_argument("--target", choices=("codex", "claude", "cursor", "gemini", "copilot", "openclaw", "agents"), required=True)
     parser.add_argument("--scope", choices=("project", "user"), default="project")
     parser.add_argument("--project", type=Path, default=Path.cwd(), help="Target project for project-scoped installs")
     parser.add_argument("--apply", action="store_true", help="Perform the copy; omitted means dry run")
     parser.add_argument("--force", action="store_true", help="Permit replacement of an existing bundle or adapter")
     args = parser.parse_args()
 
-    if args.scope == "user" and args.target in {"cursor", "gemini", "agents"}:
+    if args.scope == "user" and args.target in {"cursor", "gemini", "copilot", "agents"}:
         raise SystemExit(f"{args.target} has no supported user-scope installer; use --scope project")
 
     project = args.project.resolve()
-    effective_target = "agents" if args.target in {"cursor", "gemini", "agents"} else args.target
+    effective_target = "agents" if args.target in {"cursor", "gemini", "copilot", "agents"} else args.target
     destination = package_destination(effective_target, args.scope, project)
     copy_bundle(destination, args.apply, args.force)
 
@@ -97,6 +105,11 @@ def main() -> None:
         write_file(project / ".cursor/rules/make-automation-guru.mdc", cursor_rule(), args.apply, args.force)
     elif args.target == "gemini":
         write_file(project / "GEMINI.md", gemini_context(), args.apply, args.force)
+    elif args.target == "agents":
+        write_file(project / "AGENTS.md", agents_context(), args.apply, args.force)
+    elif args.target == "copilot":
+        write_file(project / "AGENTS.md", agents_context(), args.apply, args.force)
+        write_file(project / ".github" / "copilot-instructions.md", copilot_context(), args.apply, args.force)
 
     if not args.apply:
         print("Dry run only. Re-run with --apply to install.")
