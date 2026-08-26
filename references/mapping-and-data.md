@@ -18,7 +18,7 @@ Read this before adding a transform, formula, iterator, aggregator, variable, or
 | Keep one event as one record | Map direct fields | Preserve the source event ID/correlation ID. |
 | Produce a compact list from fields | Array mapping/functions | Confirm whether the target expects an array, JSON text, or a repeated request. |
 
-An aggregator changes execution shape. Do not put a per-item side effect after it unless the aggregate is intentionally expanded again.
+An aggregator changes execution shape. Do not put a per-item side effect after it unless the aggregate is intentionally expanded again. For source-boundary, grouping, empty-input, and retry design, read [Iterators and aggregators](iterators-and-aggregators.md).
 
 ## Variables and state
 

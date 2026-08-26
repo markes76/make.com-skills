@@ -29,6 +29,7 @@ REQUIRED = (
     "references/mcp-operations.md",
     "references/automation-architecture.md",
     "references/mapping-and-data.md",
+    "references/iterators-and-aggregators.md",
     "references/ai-agents.md",
     "references/ai-engagement.md",
     "references/cli-delivery.md",

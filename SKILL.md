@@ -35,6 +35,7 @@ The `make-com-skills` terminal package is a companion, not the intelligence laye
 | Design webhooks, schedules, mappings, state, retries, or observability | [Automation architecture](references/automation-architecture.md) |
 | Retrieve every page from an API, debug duplicates/gaps, or design pagination | [Pagination patterns](references/pagination.md) |
 | Transform fields, arrays, bundles, functions, or variables | [Mapping and data](references/mapping-and-data.md) |
+| Split arrays into per-item work or rebuild bundles into a collection | [Iterators and aggregators](references/iterators-and-aggregators.md) |
 | Diagnose a known failure signal | [Error playbook](references/error-playbook.md) |
 | Build a Make AI agent or expose tools to one | [AI agent guidance](references/ai-agents.md) |
 | Create or maintain a reusable Make app | [Custom-app guidance](references/custom-apps.md) |

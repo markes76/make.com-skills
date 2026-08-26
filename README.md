@@ -14,7 +14,7 @@
 
 An open, portable Make.com skill pack for designing, building, testing, debugging, and operating reliable [Make](https://www.make.com/) automations. Its canonical router is `make-automation-guru`; it supports the Make MCP connector when available and provides a disciplined fallback design workflow when MCP cannot answer or perform an operation.
 
-Current release: [`v0.7.1`](https://github.com/markes76/make.com-skills/releases/tag/v0.7.1) / [`@markesai/make-com-skills@0.7.1`](https://www.npmjs.com/package/@markesai/make-com-skills).
+Current release: [`v0.7.2`](https://github.com/markes76/make.com-skills/releases/tag/v0.7.2) / [`@markesai/make-com-skills@0.7.2`](https://www.npmjs.com/package/@markesai/make-com-skills).
 
 It is an AI instruction package with a terminal companion—not a replacement for Make authorization, module schemas, connections, or user approval. The official [`make-cli`](https://github.com/integromat/make-cli) remains the API runtime; this repository adds AI-led guidance, review, planning, and governed learning on top.
 
@@ -31,6 +31,7 @@ It is an AI instruction package with a terminal companion—not a replacement fo
 - Schema-first Make MCP workflows: discover the exact app/module and inspect its fields before building.
 - Production automation architecture: webhooks, schedules, routing, arrays, idempotency, state, retries, rate limits, error recovery, and observability.
 - Pagination design and review: total/page, offset, token, next-URL, and empty-page contracts; bounded execution, duplicate/gap checks, and safe iterator/aggregator boundaries.
+- Data-shape design and review: JSON/schema inspection, Parse JSON recovery, explicit Iterator/aggregator boundaries, source/group selection, empty-input behavior, and batch/idempotency checks.
 - Safe scenario lifecycle guidance: create inactive, test with controlled input, inspect executions, then activate only on request.
 - Explicit custom-app and API/CLI boundaries, so agents do not pretend an MCP scenario tool can publish a Make app.
 - A 4,422-document official-source index, generated from Make’s public Apps, Help, and Developer Hub sitemaps. The index contains titles, URLs, source IDs, and hashes—never copied article bodies.
